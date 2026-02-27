@@ -328,7 +328,9 @@ function renderAds(ads) {
         const content = currentLanguage === 'en' ? ad.content_en : ad.content;
         return `
             <div class="ad-card">
-                <div class="ad-image" style="background-image: url('${ad.image_url || 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800'}')"></div>
+                <div class="ad-image">
+                    <img src="${ad.image_url || 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800'}" alt="${title}" loading="lazy" style="width:100%; height:100%; object-fit:cover;">
+                </div>
                 <div class="ad-content">
                     <h3 class="ad-title">${title}</h3>
                     <p class="ad-text">${content}</p>
@@ -354,8 +356,10 @@ function buildCard(inst) {
     const location = currentLanguage === 'en' ? inst.location_en : inst.location;
     const streams = currentLanguage === 'en' ? inst.streams_en : inst.streams;
     return `
-        <div class="card" onclick="showDetails(${inst.id})">
-            <div class="card-image" style="background-image: url('${inst.image_url || 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=800'}')"></div>
+        <div class="card" onclick="showDetails(${inst.id})" role="button" tabindex="0" onkeypress="if(event.key==='Enter') showDetails(${inst.id})">
+            <div class="card-image">
+                <img src="${inst.image_url || 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=800'}" alt="${name}" loading="lazy">
+            </div>
             <div class="card-content">
                 <span class="card-tag">${type}</span>
                 <h3 class="card-title">${name}</h3>
