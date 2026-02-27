@@ -1,4 +1,4 @@
-const API_URL = 'https://dantewada-backend.onrender.com/api';
+const API_URL = 'https://mydistrictproject-5.onrender.com/api';
 
 // State
 let currentLanguage = 'en';
