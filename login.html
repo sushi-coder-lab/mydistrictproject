@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Dantewada Education Directory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-glow: rgba(37, 99, 235, 0.3);
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0a0f1e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .bg-orb:nth-child(1) {
+            width: 500px;
+            height: 500px;
+            background: rgba(37, 99, 235, 0.15);
+            top: -150px;
+            left: -150px;
+            animation-delay: 0s;
+        }
+
+        .bg-orb:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            background: rgba(139, 92, 246, 0.12);
+            bottom: -100px;
+            right: -100px;
+            animation-delay: -4s;
+        }
+
+        .bg-orb:nth-child(3) {
+            width: 300px;
+            height: 300px;
+            background: rgba(16, 185, 129, 0.08);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -2s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(30px, -30px) scale(1.05);
+            }
+
+            66% {
+                transform: translate(-20px, 20px) scale(0.95);
+            }
+        }
+
+        /* Grid Pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(37, 99, 235, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(37, 99, 235, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0;
+        }
+
+        /* Card Container */
+        .auth-container {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            width: 100%;
+            max-width: 1000px;
+            min-height: 600px;
+            margin: 2rem;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            animation: slideUp 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Left Panel */
+        .auth-panel-left {
+            flex: 1;
+            background: linear-gradient(145deg, #1a237e 0%, #0d47a1 50%, #1565c0 100%);
+            padding: 3.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-panel-left::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, transparent 60%);
+        }
+
+        .panel-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .panel-logo .icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .panel-logo .brand {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: white;
+            line-height: 1.1;
+        }
+
+        .panel-logo .brand span {
+            color: #93c5fd;
+        }
+
+        .panel-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .panel-content h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            line-height: 1.2;
+            margin-bottom: 1.25rem;
+        }
+
+        .panel-content p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        .features-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .features-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.95rem;
+        }
+
+        .features-list li .check {
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .panel-decorative {
+            position: absolute;
+            bottom: -80px;
+            right: -80px;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .panel-decorative::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            right: 40px;
+            bottom: 40px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.06);
+        }
+
+        /* Right Panel - Form */
+        .auth-panel-right {
+            flex: 1;
+            background: #0f172a;
+            padding: 3.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .form-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .form-header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        /* Message Box */
+        .message-box {
+            padding: 0.875rem 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: none;
+            align-items: center;
+            gap: 0.6rem;
+            animation: fadeInMsg 0.3s ease;
+        }
+
+        @keyframes fadeInMsg {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-box.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            display: flex;
+        }
+
+        .message-box.success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #6ee7b7;
+            display: flex;
+        }
+
+        /* Form Fields */
+        .form-group {
+            margin-bottom: 1.4rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.3px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #475569;
+            font-size: 0.9rem;
+            pointer-events: none;
+            transition: color 0.3s;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1.5px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 0.875rem 3rem 0.875rem 2.75rem;
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper input::placeholder {
+            color: #334155;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(37, 99, 235, 0.06);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        }
+
+        .input-wrapper input:focus~.input-icon {
+            color: var(--primary);
+        }
+
+        /* Show/Hide Password Button */
+        .toggle-password {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #475569;
+            cursor: pointer;
+            padding: 0.25rem;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .toggle-password:hover {
+            color: #94a3b8;
+        }
+
+        /* Remember me & Forgot */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .remember-me span {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .forgot-link {
+            font-size: 0.875rem;
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .forgot-link:hover {
+            color: #60a5fa;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.925rem;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.3px;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Divider */
+        .or-divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .or-divider::before,
+        .or-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .or-divider span {
+            font-size: 0.8rem;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        /* Footer Text */
+        .form-footer {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        .form-footer a {
+            color: #3b82f6;
+            font-weight: 700;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .form-footer a:hover {
+            color: #93c5fd;
+        }
+
+        .admin-link {
+            display: block;
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.82rem;
+            color: #334155;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .admin-link:hover {
+            color: #64748b;
+        }
+
+        /* Field Validation */
+        .input-wrapper input.error {
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        .field-error {
+            font-size: 0.78rem;
+            color: #f87171;
+            margin-top: 0.35rem;
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .auth-panel-left {
+                display: none;
+            }
+
+            .auth-container {
+                margin: 1rem;
+                max-width: 480px;
+                border-radius: 20px;
+            }
+
+            .auth-panel-right {
+                padding: 2.5rem 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation">
+        <div class="bg-orb"></div>
+        <div class="bg-orb"></div>
+        <div class="bg-orb"></div>
+    </div>
+
+    <div class="auth-container">
+        <!-- Left Panel -->
+        <div class="auth-panel-left">
+            <a href="index.html" class="panel-logo">
+                <div class="icon">🎓</div>
+                <div class="brand">Dantewada<span>Edu</span></div>
+            </a>
+
+            <div class="panel-content">
+                <h2>Welcome<br>Back!</h2>
+                <p>Log in to access your personalized education dashboard and explore opportunities in Dantewada
+                    district.</p>
+                <ul class="features-list">
+                    <li>
+                        <div class="check"><i class="fas fa-check"></i></div>
+                        सभी संस्थानों की जानकारी
+                    </li>
+                    <li>
+                        <div class="check"><i class="fas fa-check"></i></div>
+                        प्रवेश अपडेट और सूचनाएं
+                    </li>
+                    <li>
+                        <div class="check"><i class="fas fa-check"></i></div>
+                        छात्रवृत्ति और अवसर
+                    </li>
+                    <li>
+                        <div class="check"><i class="fas fa-check"></i></div>
+                        बिल्कुल मुफ्त
+                    </li>
+                </ul>
+            </div>
+
+            <div class="panel-decorative"></div>
+        </div>
+
+        <!-- Right Panel - Form -->
+        <div class="auth-panel-right">
+            <div class="form-header">
+                <h1>Sign In</h1>
+                <p>अपने खाते में लॉग इन करें</p>
+            </div>
+
+            <!-- Message Box -->
+            <div class="message-box" id="msg-box">
+                <i class="fas fa-circle-xmark"></i>
+                <span id="msg-text"></span>
+            </div>
+
+            <form id="login-form" novalidate>
+                <div class="form-group">
+                    <label for="username">Username / उपयोगकर्ता नाम</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="username" placeholder="Enter your username" autocomplete="username">
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
+                    <div class="field-error" id="username-error">Username required है</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password / पासवर्ड</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" placeholder="Enter your password"
+                            autocomplete="current-password">
+                        <i class="fas fa-lock input-icon"></i>
+                        <button type="button" class="toggle-password" id="toggle-pwd" title="Show/Hide Password">
+                            <i class="fas fa-eye" id="eye-icon"></i>
+                        </button>
+                    </div>
+                    <div class="field-error" id="password-error">Password required है</div>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember-me">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="forgot-link" onclick="alert('Admin se contact karein'); return false;">Forgot
+                        password?</a>
+                </div>
+
+                <button type="submit" class="submit-btn" id="login-btn">
+                    <div class="spinner" id="spinner"></div>
+                    <i class="fas fa-sign-in-alt" id="btn-icon"></i>
+                    <span id="btn-text">Log In</span>
+                </button>
+            </form>
+
+            <div class="or-divider"><span>OR</span></div>
+
+            <div class="form-footer">
+                <p>खाता नहीं है? <a href="signup.html">Sign Up karein →</a></p>
+            </div>
+
+            <a href="admin_login.html" class="admin-link">
+                <i class="fas fa-shield-alt"></i> Admin Login
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+
+        // Show/Hide Password
+        const togglePwd = document.getElementById('toggle-pwd');
+        const pwdInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eye-icon');
+
+        togglePwd.addEventListener('click', () => {
+            const isHidden = pwdInput.type === 'password';
+            pwdInput.type = isHidden ? 'text' : 'password';
+            eyeIcon.className = isHidden ? 'fas fa-eye-slash' : 'fas fa-eye';
+        });
+
+        // Show message
+        function showMessage(text, type) {
+            const box = document.getElementById('msg-box');
+            const msgText = document.getElementById('msg-text');
+            const icon = box.querySelector('i');
+            box.className = `message-box ${type}`;
+            icon.className = type === 'error' ? 'fas fa-circle-xmark' : 'fas fa-circle-check';
+            msgText.textContent = text;
+            box.style.display = 'flex';
+        }
+
+        // Field validation
+        function validateField(id, errorId, message) {
+            const input = document.getElementById(id);
+            const error = document.getElementById(errorId);
+            if (!input.value.trim()) {
+                input.classList.add('error');
+                error.style.display = 'block';
+                return false;
+            }
+            input.classList.remove('error');
+            error.style.display = 'none';
+            return true;
+        }
+
+        // Clear errors on typing
+        ['username', 'password'].forEach(id => {
+            document.getElementById(id).addEventListener('input', function () {
+                this.classList.remove('error');
+                document.getElementById(`${id}-error`).style.display = 'none';
+            });
+        });
+
+        // Form Submit
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const isUsernameValid = validateField('username', 'username-error', 'Username required है');
+            const isPasswordValid = validateField('password', 'password-error', 'Password required है');
+
+            if (!isUsernameValid || !isPasswordValid) return;
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
+
+            // Loading state
+            const btn = document.getElementById('login-btn');
+            const spinner = document.getElementById('spinner');
+            const btnIcon = document.getElementById('btn-icon');
+            const btnText = document.getElementById('btn-text');
+
+            btn.disabled = true;
+            spinner.style.display = 'block';
+            btnIcon.style.display = 'none';
+            btnText.textContent = 'Logging in...';
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Save user to localStorage
+                    const storage = rememberMe ? localStorage : sessionStorage;
+                    localStorage.setItem('user', JSON.stringify(data.user));
+
+                    showMessage('Login successful! Redirecting...', 'success');
+                    btnText.textContent = 'Success!';
+
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1200);
+                } else {
+                    showMessage(data.error || 'Invalid username or password', 'error');
+                    btn.disabled = false;
+                    spinner.style.display = 'none';
+                    btnIcon.style.display = 'inline';
+                    btnText.textContent = 'Log In';
+                }
+            } catch (err) {
+                console.error('Login error:', err);
+                showMessage('Server se connect nahi ho pa raha. Please check karo ki server chal raha hai.', 'error');
+                btn.disabled = false;
+                spinner.style.display = 'none';
+                btnIcon.style.display = 'inline';
+                btnText.textContent = 'Log In';
+            }
+        });
+
+        // If already logged in, redirect
+        const user = localStorage.getItem('user');
+        if (user) {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+
+</html>
