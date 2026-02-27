@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dantewada Education Directory | Find Schools & Colleges</title>
+    <meta name="description"
+        content="Explore and find all schools and colleges in Dantewada district, Chhattisgarh. Search by name, stream, subject, and location.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header class="glass-header">
+        <div class="header-container">
+            <div class="logo-container">
+                <div class="logo-img">📚</div>
+                <div class="logo-text">
+                    <div class="logo-title">Dantewada<span>Edu</span></div>
+                    <div class="logo-subtitle" data-i18n="nav_subtitle">District Education Directory</div>
+                </div>
+            </div>
+
+            <nav class="main-nav">
+                <ul class="nav-links">
+                    <li><a href="#ads-section" data-i18n="nav_ads">Opportunities</a></li>
+                    <li><a href="#institutions" data-i18n="nav_institutions">Institutions</a></li>
+                    <li><a href="#updates-section" data-i18n="nav_updates">Updates</a></li>
+                    <li><a href="#about" data-i18n="nav_about">About</a></li>
+                    <li><a href="#contact" data-i18n="nav_contact">Contact</a></li>
+                    <li class="auth-group">
+                        <a href="login.html" class="signin-link" data-i18n="nav_signin">Sign In</a>
+                        <a href="signup.html" class="premium-btn get-started" data-i18n="nav_getstarted">Get Started</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="header-actions">
+                <div class="lang-selector">
+                    <select id="language-select">
+                        <option value="en">English</option>
+                        <option value="hi">हिन्दी</option>
+                    </select>
+                </div>
+                <button class="mobile-toggle" aria-label="Toggle Menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero" id="hero-section">
+        <div class="hero-content">
+            <h1 data-i18n="hero_title">Find Your Future in Dantewada</h1>
+            <p data-i18n="hero_subtitle">Your comprehensive guide to every school, college, and ITI in the district.</p>
+        </div>
+        <div class="hero-slider">
+            <div class="slide active"
+                style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('hero.png');"></div>
+            <div class="slide"
+                style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('college.png');"></div>
+            <div class="slide"
+                style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('iti.png');"></div>
+        </div>
+    </section>
+
+    <div class="search-wrapper">
+        <div class="search-container">
+            <input type="text" id="main-search" placeholder="Search by name, subject, or course..."
+                data-i18n-placeholder="search_placeholder">
+            <button id="search-btn" data-i18n="search_btn">Find Institutions</button>
+        </div>
+    </div>
+
+    <div id="ads-section" class="ads-wrapper" style="margin-bottom: 4rem;">
+        <div class="ads-header">
+            <h2 class="section-title" data-i18n="ads_title" style="margin-bottom: 0.5rem;">Featured Opportunities</h2>
+            <p class="section-subtitle" data-i18n="ads_subtitle">Scholarships, Coaching & Educational Ads</p>
+        </div>
+        <div id="ads-container" class="ads-grid">
+            <!-- Ads will be loaded here -->
+        </div>
+    </div>
+
+    <main>
+        <div id="updates-section" style="margin-bottom: 6rem;">
+            <h2 class="section-title" data-i18n="updates_title">Latest News & Updates</h2>
+            <div id="updates-container" class="grid">
+                <!-- Updates will be loaded here -->
+            </div>
+        </div>
+
+        <div id="institutions">
+            <h2 class="section-title" data-i18n="institutions_title">Explore Institutions</h2>
+
+            <div class="filters">
+                <button class="filter-btn active" data-type="" data-i18n="filter_all">All</button>
+                <button class="filter-btn" data-type="School" data-i18n="filter_schools">Schools</button>
+                <button class="filter-btn" data-type="College" data-i18n="filter_colleges">Colleges</button>
+
+                <select id="stream-filter" class="filter-btn">
+                    <option value="" data-i18n="select_stream">All Streams</option>
+                    <option value="Science" data-i18n="stream_science">Science</option>
+                    <option value="Commerce" data-i18n="stream_commerce">Commerce</option>
+                    <option value="Arts" data-i18n="stream_arts">Arts</option>
+                    <option value="Engineering" data-i18n="stream_engineering">Engineering</option>
+                    <option value="Medical" data-i18n="stream_medical">Medical</option>
+                    <option value="General" data-i18n="stream_general">General Education</option>
+                    <option value="ITI" data-i18n="stream_iti">ITI</option>
+                </select>
+
+                <select id="location-filter" class="filter-btn">
+                    <option value="" data-i18n="select_location">All Locations</option>
+                    <option value="Dantewada" data-i18n="loc_dantewada">Dantewada</option>
+                    <option value="Geedam" data-i18n="loc_geedam">Geedam</option>
+                    <option value="Katekalyan" data-i18n="loc_katekalyan">Katekalyan</option>
+                    <option value="Kuakonda" data-i18n="loc_kuakonda">Kuakonda</option>
+                    <option value="Kirandul" data-i18n="loc_kirandul">Kirandul</option>
+                    <option value="Bacheli" data-i18n="loc_bacheli">Bacheli</option>
+                    <option value="Barsoor" data-i18n="loc_barsoor">Barsoor</option>
+                </select>
+
+                <button id="clear-filters" class="filter-btn"
+                    style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);"
+                    data-i18n="clear_filters">Clear All</button>
+            </div>
+
+            <div id="institutions-grid" class="grid">
+                <!-- Data will be loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <div id="detail-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="modal-body">
+                <!-- Details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div
+            style="max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 4rem;">
+            <div id="about">
+                <h3 data-i18n="footer_title">Dantewada Edu</h3>
+                <p style="margin-top: 1.5rem; opacity: 0.7;" data-i18n="footer_about">Empowering students and parents
+                    with transparent
+                    information about educational opportunities in the district.</p>
+            </div>
+            <div id="contact">
+                <h4 data-i18n="footer_contact">Contact Us</h4>
+                <ul style="list-style: none; margin-top: 1.5rem; opacity: 0.7;">
+                    <li><span data-i18n="footer_email">Email</span>: info@dantewadaedu.in</li>
+                    <li><span data-i18n="footer_phone">Phone</span>: +91 7856 25XXXX</li>
+                </ul>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 6rem; opacity: 0.4; font-size: 0.85rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem;"
+            data-i18n="footer_rights">
+            © 2026 District Education Directory, Dantewada. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+
+</html>
