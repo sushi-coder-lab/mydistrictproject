@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://mydistrictproject-5.onrender.com/api';
 
 const loginForm = document.getElementById('login-form');
 const loginSection = document.getElementById('login-section');
