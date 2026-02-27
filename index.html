@@ -7,6 +7,25 @@
     <title>Dantewada Education Directory | Find Schools & Colleges</title>
     <meta name="description"
         content="Explore and find all schools and colleges in Dantewada district, Chhattisgarh. Search by name, stream, subject, and location.">
+    <meta name="keywords" content="Dantewada, Education, Schools, Colleges, ITI, Chhattisgarh, Education Directory">
+    <link rel="canonical" href="https://sushi-coder-lab.github.io/mydistrictproject/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sushi-coder-lab.github.io/mydistrictproject/">
+    <meta property="og:title" content="Dantewada Education Directory">
+    <meta property="og:description"
+        content="Comprehensive guide to every school, college, and ITI in Dantewada. Find your future here.">
+    <meta property="og:image" content="https://sushi-coder-lab.github.io/mydistrictproject/hero.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://sushi-coder-lab.github.io/mydistrictproject/">
+    <meta property="twitter:title" content="Dantewada Education Directory">
+    <meta property="twitter:description"
+        content="Comprehensive guide to every school, college, and ITI in Dantewada. Find your future here.">
+    <meta property="twitter:image" content="https://sushi-coder-lab.github.io/mydistrictproject/hero.png">
+
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,6 +59,7 @@
 
             <div class="header-actions">
                 <div class="lang-selector">
+                    <label for="language-select" class="visually-hidden">Select Language</label>
                     <select id="language-select">
                         <option value="en">English</option>
                         <option value="hi">हिन्दी</option>
@@ -59,12 +79,9 @@
             <p data-i18n="hero_subtitle">Your comprehensive guide to every school, college, and ITI in the district.</p>
         </div>
         <div class="hero-slider">
-            <div class="slide active"
-                style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('hero.png');"></div>
-            <div class="slide"
-                style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('college.png');"></div>
-            <div class="slide"
-                style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('iti.png');"></div>
+            <img src="hero.png" alt="Dantewada Education" class="slide active">
+            <img src="college.png" alt="College Campus" class="slide">
+            <img src="iti.png" alt="ITI Training Center" class="slide">
         </div>
     </section>
 
