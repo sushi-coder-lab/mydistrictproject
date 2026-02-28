@@ -1,4 +1,6 @@
-const API_URL = 'https://mydistrictproject-5.onrender.com/api';
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000/api'
+    : 'https://dantewada-backend.onrender.com/api';
 
 // State
 let currentLanguage = 'en';
@@ -13,6 +15,8 @@ let currentFilters = {
 let allInstitutions = [];
 let visibleCount = 6;
 const PAGE_SIZE = 6;
+let visibleUpdatesCount = 3;
+let allUpdates = [];
 
 const translations = {
     en: {
@@ -298,7 +302,24 @@ async function fetchUpdates() {
     try {
         const response = await fetch(`${API_URL}/updates`);
         const data = await response.json();
-        renderUpdates(data);
+
+        // De-duplicate updates based on title (Hindi or English)
+        const uniqueUpdates = [];
+        const seenTitles = new Set();
+
+        // Sort by date descending first (assuming server might not always)
+        data.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        for (const update of data) {
+            const title = currentLanguage === 'en' ? update.title_en : update.title;
+            if (!seenTitles.has(title)) {
+                seenTitles.add(title);
+                uniqueUpdates.push(update);
+            }
+        }
+
+        allUpdates = uniqueUpdates;
+        renderUpdates();
     } catch (error) {
         console.error('Error fetching updates:', error);
     }
@@ -437,9 +458,12 @@ function loadMore() {
     if (btn) btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-function renderUpdates(updates) {
+function renderUpdates() {
     if (!updatesContainer) return;
-    updatesContainer.innerHTML = updates.map(update => {
+
+    const updatesToShow = allUpdates.slice(0, visibleUpdatesCount);
+
+    updatesContainer.innerHTML = updatesToShow.map(update => {
         const title = currentLanguage === 'en' ? update.title_en : update.title;
         const content = currentLanguage === 'en' ? update.content_en : update.content;
 
@@ -449,16 +473,49 @@ function renderUpdates(updates) {
         if (title.toUpperCase().includes('MEDICAL') || title.includes('मेडिकल')) label = 'MEDICAL NEWS';
 
         return `
-            <div class="card" style="padding: 1.5rem; border-left: 4px solid var(--primary);">
+            <div class="card" style="padding: 1.5rem; border-left: 4px solid var(--primary); transition: transform 0.3s ease;">
                 <div class="card-tag" style="background: #eff6ff;">${label}</div>
                 <h3 style="margin: 0.5rem 0; font-size: 1.25rem;">${title}</h3>
                 <p style="font-size: 0.95rem; color: var(--text-dark); opacity: 0.8;">${content}</p>
                 <div style="font-size: 0.8rem; margin-top: 1rem; color: var(--primary); font-weight: 600;">
-                    ${new Date(update.date).toLocaleDateString()}
+                    📅 ${new Date(update.date).toLocaleDateString()}
                 </div>
             </div>
         `;
     }).join('');
+
+    // Handle "Load More" for updates
+    const oldBtn = document.getElementById('load-more-updates-wrapper');
+    if (oldBtn) oldBtn.remove();
+
+    if (visibleUpdatesCount < allUpdates.length) {
+        const wrapper = document.createElement('div');
+        wrapper.id = 'load-more-updates-wrapper';
+        wrapper.style.cssText = 'grid-column: 1/-1; text-align:center; padding-top: 1rem;';
+        wrapper.innerHTML = `
+            <button onclick="loadMoreUpdates()" style="
+                background: none;
+                border: 2px solid var(--primary);
+                color: var(--primary);
+                border-radius: 30px;
+                padding: 0.6rem 2rem;
+                font-weight: 700;
+                cursor: pointer;
+                transition: all 0.3s;
+            " onmouseover="this.style.background='var(--primary)'; this.style.color='white'"
+               onmouseout="this.style.background='none'; this.style.color='var(--primary)'">
+                View All Updates (${allUpdates.length - visibleUpdatesCount} more)
+            </button>
+        `;
+        updatesContainer.after(wrapper);
+    }
+}
+
+function loadMoreUpdates() {
+    visibleUpdatesCount = allUpdates.length; // Show all
+    renderUpdates();
+    const section = document.getElementById('updates');
+    if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 async function showDetails(id) {
