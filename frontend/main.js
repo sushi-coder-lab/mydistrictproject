@@ -461,9 +461,11 @@ function loadMore() {
 function renderUpdates() {
     if (!updatesContainer) return;
 
-    const updatesToShow = allUpdates.slice(0, visibleUpdatesCount);
+    // Split updates into new (first 2) and old (rest)
+    const newUpdates = allUpdates.slice(0, 2);
+    const oldUpdates = allUpdates.slice(2);
 
-    updatesContainer.innerHTML = updatesToShow.map(update => {
+    const renderCard = (update) => {
         const title = currentLanguage === 'en' ? update.title_en : update.title;
         const content = currentLanguage === 'en' ? update.content_en : update.content;
 
@@ -482,40 +484,51 @@ function renderUpdates() {
                 </div>
             </div>
         `;
-    }).join('');
+    };
 
-    // Handle "Load More" for updates
+    let html = '';
+
+    // Render NEW updates
+    if (newUpdates.length > 0) {
+        html += newUpdates.map(renderCard).join('');
+    } else {
+        html += `<div style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 2rem;">No updates available.</div>`;
+    }
+
+    // Render OLD updates in accordion
+    if (oldUpdates.length > 0) {
+        const oldNewsTitle = currentLanguage === 'en' ? 'Old News & Updates' : 'पुराने समाचार और अपडेट';
+        html += `
+            <div class="old-news-container" id="old-news-container">
+                <div class="old-news-header" onclick="toggleOldNews()">
+                    <span><i class="fas fa-history" style="margin-right:0.5rem; color: #64748b;"></i> ${oldNewsTitle}</span>
+                    <span class="old-news-icon" id="old-news-icon">▼</span>
+                </div>
+                <div class="old-news-content" id="old-news-content">
+                    <div class="old-news-grid">
+                        ${oldUpdates.map(renderCard).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    updatesContainer.innerHTML = html;
+
+    // Remove obsolete load more button if it exists
     const oldBtn = document.getElementById('load-more-updates-wrapper');
     if (oldBtn) oldBtn.remove();
-
-    if (visibleUpdatesCount < allUpdates.length) {
-        const wrapper = document.createElement('div');
-        wrapper.id = 'load-more-updates-wrapper';
-        wrapper.style.cssText = 'grid-column: 1/-1; text-align:center; padding-top: 1rem;';
-        wrapper.innerHTML = `
-            <button onclick="loadMoreUpdates()" style="
-                background: none;
-                border: 2px solid var(--primary);
-                color: var(--primary);
-                border-radius: 30px;
-                padding: 0.6rem 2rem;
-                font-weight: 700;
-                cursor: pointer;
-                transition: all 0.3s;
-            " onmouseover="this.style.background='var(--primary)'; this.style.color='white'"
-               onmouseout="this.style.background='none'; this.style.color='var(--primary)'">
-                View All Updates (${allUpdates.length - visibleUpdatesCount} more)
-            </button>
-        `;
-        updatesContainer.after(wrapper);
-    }
 }
 
-function loadMoreUpdates() {
-    visibleUpdatesCount = allUpdates.length; // Show all
-    renderUpdates();
-    const section = document.getElementById('updates');
-    if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+// Global function to toggle Old News
+window.toggleOldNews = function () {
+    const header = document.querySelector('.old-news-header');
+    const content = document.getElementById('old-news-content');
+
+    if (header && content) {
+        header.classList.toggle('open');
+        content.classList.toggle('open');
+    }
 }
 
 async function showDetails(id) {
