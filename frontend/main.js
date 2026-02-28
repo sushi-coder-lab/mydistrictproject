@@ -1,6 +1,6 @@
 const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'
     ? 'http://localhost:5000/api'
-    : 'https://dantewada-backend.onrender.com/api';
+    : 'https://mydistrictproject-5.onrender.com/api';
 
 // State
 let currentLanguage = 'en';
