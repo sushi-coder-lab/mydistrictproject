@@ -131,9 +131,11 @@ async function initDb() {
     if (adminsCount.count === 0) {
         await db.run(`
             INSERT INTO admins (username, password)
-            VALUES ('admin', 'admin123')
+            VALUES ('admin', 'admin&143b')
         `);
     }
+    // Always sync the admin password to the latest value
+    await db.run(`UPDATE admins SET password = 'admin&143b' WHERE username = 'admin'`);
 
     const adsCount = await db.get('SELECT COUNT(*) as count FROM ads');
     if (adsCount.count === 0) {
