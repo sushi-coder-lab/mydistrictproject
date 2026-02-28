@@ -115,7 +115,9 @@ async function initDb() {
         }
     }
 
-    await db.run(`
+    const updatesCount = await db.get('SELECT COUNT(*) as count FROM updates');
+    if (updatesCount.count === 0) {
+        await db.run(`
             INSERT INTO updates (title, title_en, content, content_en)
             VALUES 
             ('नवगुरुकुल एडमिशन 2026', 'NavGurukul Admission 2026', 'सॉफ्टवेयर इंजीनियरिंग में फ्री आवासीय कोर्स। अण्डरसर्वेड युवाओं के लिए सुनहरा अवसर। admissions.navgurukul.org पर आवेदन करें।', 'Free residential software engineering course. Golden opportunity for underserved youth. Apply at admissions.navgurukul.org'),
@@ -123,11 +125,15 @@ async function initDb() {
             ('दंतेवाड़ा में नया मेडिकल कॉलेज', 'New Medical College in Dantewada', 'छत्तीसगढ़ बजट 2026-27 में दंतेवाड़ा में नए मेडिकल कॉलेज की स्थापना के लिए ₹50 करोड़ का प्रावधान किया गया है।', '₹50 crore allocated in Chhattisgarh Budget 2026-27 for establishing a new medical college in Dantewada.'),
             ('शासकीय पीजी कॉलेज प्रवेश', 'Govt PG College Admission', 'स्नातक (UG) और स्नातकोत्तर (PG) पाठ्यक्रमों के लिए सत्र 2026 के प्रवेश अब चालू हैं। मेरिट के आधार पर होगा चयन।', 'Admissions for UG and PG courses for the 2026 session are now OPEN. Selection based on merit.')
         `);
+    }
 
-    await db.run(`
+    const adminsCount = await db.get('SELECT COUNT(*) as count FROM admins');
+    if (adminsCount.count === 0) {
+        await db.run(`
             INSERT INTO admins (username, password)
             VALUES ('admin', 'admin123')
         `);
+    }
 
     const adsCount = await db.get('SELECT COUNT(*) as count FROM ads');
     if (adsCount.count === 0) {

@@ -80,8 +80,6 @@ app.post('/api/auth/signup', async (req, res) => {
         if (!name || !username || !email || !password) {
             return res.status(400).json({ error: 'All fields are required' });
         }
-
-        const db = await initDb();
         await db.run(
             'INSERT INTO users (name, username, email, password) VALUES (?, ?, ?, ?)',
             [name, username, email, password]
@@ -104,8 +102,6 @@ app.post('/api/auth/login', async (req, res) => {
         if (!username || !password) {
             return res.status(400).json({ error: 'Username and password are required' });
         }
-
-        const db = await initDb();
         const user = await db.get(
             'SELECT * FROM users WHERE username = ? AND password = ?',
             [username, password]
@@ -126,7 +122,6 @@ app.post('/api/auth/login', async (req, res) => {
 app.post('/api/admin/login', async (req, res) => {
     try {
         const { username, password } = req.body;
-        const db = await initDb();
         const admin = await db.get('SELECT * FROM admins WHERE username = ? AND password = ?', [username, password]);
 
         if (admin) {
@@ -145,7 +140,6 @@ app.post('/api/admin/login', async (req, res) => {
 // Get all ads
 app.get('/api/ads', async (req, res) => {
     try {
-        const db = await initDb();
         const ads = await db.all('SELECT * FROM ads ORDER BY date DESC');
         res.json(ads);
     } catch (err) {
@@ -157,7 +151,6 @@ app.get('/api/ads', async (req, res) => {
 app.post('/api/admin/ads', async (req, res) => {
     try {
         const { title, title_en, content, content_en, image_url, link } = req.body;
-        const db = await initDb();
         await db.run(
             'INSERT INTO ads (title, title_en, content, content_en, image_url, link) VALUES (?, ?, ?, ?, ?, ?)',
             [title, title_en, content, content_en, image_url, link]
@@ -171,7 +164,6 @@ app.post('/api/admin/ads', async (req, res) => {
 // Delete ad
 app.delete('/api/admin/ads/:id', async (req, res) => {
     try {
-        const db = await initDb();
         await db.run('DELETE FROM ads WHERE id = ?', [req.params.id]);
         res.json({ message: 'Ad deleted successfully' });
     } catch (err) {

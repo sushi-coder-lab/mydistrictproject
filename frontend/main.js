@@ -248,10 +248,7 @@ function updateAuthUI() {
 
 // Initial Load
 document.addEventListener('DOMContentLoaded', () => {
-    setLanguage(currentLanguage); // Initialize language based on currentLanguage state
-    fetchInstitutions();
-    fetchUpdates();
-    fetchAds();
+    setLanguage(currentLanguage); // Initialize language based on currentLanguage state (this also calls fetchInstitutions, fetchUpdates, fetchAds)
     initSlider();
     initMobileMenu();
     updateAuthUI(); // Call this on initial load
@@ -311,7 +308,8 @@ async function fetchUpdates() {
         data.sort((a, b) => new Date(b.date) - new Date(a.date));
 
         for (const update of data) {
-            const title = currentLanguage === 'en' ? update.title_en : update.title;
+            const originalTitle = currentLanguage === 'en' ? update.title_en : update.title;
+            const title = String(originalTitle).trim().toLowerCase();
             if (!seenTitles.has(title)) {
                 seenTitles.add(title);
                 uniqueUpdates.push(update);
@@ -340,7 +338,8 @@ async function fetchAds() {
 function renderAds(ads) {
     if (!adsContainer) return;
     if (ads.length === 0) {
-        adsContainer.style.display = 'none';
+        adsContainer.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 2rem; font-size: 1.1rem;">No new opportunities right now. Check back later!</div>`;
+        adsContainer.style.display = 'block';
         return;
     }
     adsContainer.style.display = 'grid';
