@@ -61,6 +61,24 @@
             </nav>
 
             <div class="header-actions">
+                <!-- Notification System -->
+                <div class="notification-wrapper">
+                    <button id="notification-btn" class="notification-btn" aria-label="Notifications"
+                        title="View Notifications">
+                        🔔<span class="notification-badge" id="notification-badge"></span>
+                    </button>
+                    <div id="notification-dropdown" class="notification-dropdown">
+                        <div class="notification-header">
+                            <h3 data-i18n="notif_title">Latest Updates</h3>
+                            <button id="clear-notifications" class="clear-btn" data-i18n="notif_clear">Clear</button>
+                        </div>
+                        <div id="notification-list" class="notification-list">
+                            <!-- Populated via JS -->
+                            <p class="no-notifications" data-i18n="notif_none">No new updates</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="lang-selector">
                     <label for="language-select" class="visually-hidden">Select Language</label>
                     <select id="language-select">
@@ -258,7 +276,9 @@
                         Notices</a> ·
                     <a href="gallery.html" style="color:#93c5fd; font-size:0.85rem; text-decoration:none;">🖼️
                         Gallery</a> ·
-                    <a href="map.html" style="color:#93c5fd; font-size:0.85rem; text-decoration:none;">🗺️ Map</a>
+                    <a href="map.html" style="color:#93c5fd; font-size:0.85rem; text-decoration:none;">🗺️ Map</a> ·
+                    <a href="feedback.html" style="color:#93c5fd; font-size:0.85rem; text-decoration:none;">📝
+                        Feedback</a>
                 </div>
             </div>
             <div id="contact">

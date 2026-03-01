@@ -85,7 +85,10 @@ const translations = {
         btn_login: "Log In",
         auth_redirect_signup: "Don't have an account? Sign up here",
         nav_logout: "Logout",
-        welcome_user: "Welcome, "
+        welcome_user: "Welcome, ",
+        notif_title: "Latest Updates",
+        notif_clear: "Clear",
+        notif_none: "No new updates"
     },
     hi: {
         nav_subtitle: "जिला शिक्षा निर्देशिका",
@@ -153,7 +156,10 @@ const translations = {
         btn_login: "लॉग इन करें",
         auth_redirect_signup: "खाता नहीं है? यहां साइन अप करें",
         nav_logout: "लॉगआउट",
-        welcome_user: "स्वागत है, "
+        welcome_user: "स्वागत है, ",
+        notif_title: "नवीनतम अपडेट",
+        notif_clear: "साफ़ करें",
+        notif_none: "कोई नया अपडेट नहीं"
     }
 };
 
@@ -896,6 +902,112 @@ function trackPageView() {
 // ============================================
 // PWA SERVICE WORKER REGISTRATION
 // ============================================
+// ============================================
+// NOTIFICATION SYSTEM
+// ============================================
+function initNotifications() {
+    const btn = document.getElementById('notification-btn');
+    const dropdown = document.getElementById('notification-dropdown');
+    const list = document.getElementById('notification-list');
+    const clearBtn = document.getElementById('clear-notifications');
+
+    if (!btn || !dropdown || !list) return;
+
+    // Toggle dropdown
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('active');
+        if (dropdown.classList.contains('active')) {
+            markNotificationsAsRead();
+        }
+    });
+
+    // Close dropdown on click outside
+    document.addEventListener('click', (e) => {
+        if (!dropdown.contains(e.target) && e.target !== btn) {
+            dropdown.classList.remove('active');
+        }
+    });
+
+    // Clear notifications
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            const items = list.querySelectorAll('.notification-item');
+            const seenIds = JSON.parse(localStorage.getItem('seen_notifications') || '[]');
+            items.forEach(item => {
+                if (item.dataset.id) seenIds.push(item.dataset.id.toString());
+            });
+            localStorage.setItem('seen_notifications', JSON.stringify([...new Set(seenIds)]));
+            renderNotifications([]);
+            updateNotificationBadge(0);
+        });
+    }
+
+    // Initial fetch
+    fetchNotifications();
+}
+
+async function fetchNotifications() {
+    try {
+        const response = await fetch(`${API_URL}/notices?limit=5`);
+        if (!response.ok) return;
+        const notices = await response.json();
+        renderNotifications(notices);
+    } catch (error) {
+        console.error('Error fetching notifications:', error);
+    }
+}
+
+function renderNotifications(notices) {
+    const list = document.getElementById('notification-list');
+    const seenIds = JSON.parse(localStorage.getItem('seen_notifications') || '[]');
+
+    if (!notices || notices.length === 0) {
+        list.innerHTML = `<p class="no-notifications" data-i18n="notif_none">${translations[currentLanguage].notif_none || 'No new updates'}</p>`;
+        updateNotificationBadge(0);
+        return;
+    }
+
+    const unreadCount = notices.filter(n => !seenIds.includes(n.id.toString())).length;
+    updateNotificationBadge(unreadCount);
+
+    list.innerHTML = notices.map(notice => {
+        const isRead = seenIds.includes(notice.id.toString());
+        const date = new Date(notice.date || Date.now()).toLocaleDateString();
+        return `
+            <div class="notification-item ${isRead ? '' : 'unread'}" data-id="${notice.id}" onclick="window.location.href='notices.html'">
+                <h4>${notice.title}</h4>
+                <p>${notice.content.substring(0, 60)}...</p>
+                <span class="time">${date}</span>
+            </div>
+        `;
+    }).join('');
+}
+
+function updateNotificationBadge(count) {
+    const badge = document.getElementById('notification-badge');
+    if (!badge) return;
+    if (count > 0) {
+        badge.classList.add('active');
+    } else {
+        badge.classList.remove('active');
+    }
+}
+
+function markNotificationsAsRead() {
+    const list = document.getElementById('notification-list');
+    const unreadItems = list.querySelectorAll('.notification-item.unread');
+    if (unreadItems.length === 0) return;
+
+    const seenIds = JSON.parse(localStorage.getItem('seen_notifications') || '[]');
+    unreadItems.forEach(item => {
+        item.classList.remove('unread');
+        seenIds.push(item.dataset.id.toString());
+    });
+    localStorage.setItem('seen_notifications', JSON.stringify([...new Set(seenIds)]));
+    updateNotificationBadge(0);
+}
+
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -923,6 +1035,7 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('load', () => {
     initDarkMode();
     initVoiceSearch();
+    initNotifications();
     loadStats();
     trackPageView();
     registerServiceWorker();
