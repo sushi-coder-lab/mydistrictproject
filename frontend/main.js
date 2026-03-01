@@ -650,28 +650,8 @@ if (closeModal) {
     });
 }
 
-const clearFiltersBtn = document.getElementById('clear-filters');
-if (clearFiltersBtn) {
-    clearFiltersBtn.addEventListener('click', () => {
-        currentFilters = {
-            type: '',
-            stream: '',
-            location: '',
-            search: ''
-        };
-
-        // Update UI
-        if (searchInput) searchInput.value = '';
-        if (streamFilter) streamFilter.value = '';
-        if (locationFilter) locationFilter.value = '';
-        typeButtons.forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.dataset.type === '') btn.classList.add('active');
-        });
-
-        fetchInstitutions();
-    });
-}
+// Fetch and display initial institutions
+fetchInstitutions();
 
 // ============================================
 // DARK MODE
