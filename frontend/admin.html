@@ -74,15 +74,22 @@
     </header>
 
     <div id="admin-dashboard" class="admin-dashboard">
-        <div class="admin-header">
+        <div class="admin-header" style="flex-wrap:wrap; gap:0.75rem;">
             <h2>Management Dashboard</h2>
-            <div>
-                <button class="filter-btn active" onclick="showSection('institutions-mgmt', event)">Add
-                    Institution</button>
-                <button class="filter-btn" onclick="showSection('ads-mgmt', event)" style="margin-left: 0.5rem;">Manage
-                    Ads</button>
+            <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+                <button class="filter-btn active" onclick="showSection('institutions-mgmt', event)">🏫
+                    Institutions</button>
+                <button class="filter-btn" onclick="showSection('ads-mgmt', event)">📣 Ads</button>
+                <button class="filter-btn" onclick="showSection('analytics-mgmt', event)">📊 Analytics</button>
+                <button class="filter-btn" onclick="showSection('scholarships-mgmt', event)">🎓 Scholarships</button>
+                <button class="filter-btn" onclick="showSection('notices-mgmt', event)">📢 Notices</button>
+                <button class="filter-btn" onclick="showSection('teachers-mgmt', event)">👨‍🏫 Teachers</button>
+                <button class="filter-btn" onclick="showSection('feedback-mgmt', event)">📝 Feedback</button>
+                <button class="filter-btn" onclick="showSection('auditlog-mgmt', event)">🗒️ Audit Log</button>
+                <button class="filter-btn" onclick="generatePDF()"
+                    style="background:#dcfce7;color:#15803d;border-color:#bbf7d0;">📄 PDF Report</button>
                 <button id="logout-btn" class="filter-btn"
-                    style="margin-left: 1rem; background: #fee2e2; color: #ef4444; border-color: #fecaca;">Logout</button>
+                    style="background: #fee2e2; color: #ef4444; border-color: #fecaca;">Logout</button>
             </div>
         </div>
 
@@ -245,8 +252,138 @@
                 </div>
             </div>
         </div>
+
+        <!-- Analytics Section -->
+        <div id="analytics-mgmt" class="mgmt-section" style="display:none; margin-top:2rem;">
+            <div class="card" style="padding:2rem;">
+                <h3>📊 Analytics Dashboard</h3>
+                <div id="analytics-content" style="margin-top:1.5rem;">
+                    <p style="color:#64748b;">Loading analytics...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scholarships Section -->
+        <div id="scholarships-mgmt" class="mgmt-section" style="display:none; margin-top:2rem;">
+            <div class="card" style="padding:2rem;">
+                <h3>🎓 Add Scholarship</h3>
+                <form id="scholarship-form"
+                    style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-top:1.5rem;">
+                    <div class="form-group"><label>Title (Hindi)</label><input type="text" id="s-title" required></div>
+                    <div class="form-group"><label>Title (English)</label><input type="text" id="s-title-en" required>
+                    </div>
+                    <div class="form-group"><label>Amount</label><input type="text" id="s-amount"
+                            placeholder="e.g. ₹15,000"></div>
+                    <div class="form-group"><label>Category</label>
+                        <select id="s-category"
+                            style="width:100%;padding:0.75rem;border:1px solid #e2e8f0;border-radius:0.5rem;">
+                            <option value="merit">Merit</option>
+                            <option value="sc_st">SC/ST</option>
+                            <option value="obc_sc_st">OBC/SC/ST</option>
+                            <option value="district">District Special</option>
+                            <option value="general">General</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column:span 2;"><label>Eligibility (Hindi)</label><input
+                            type="text" id="s-elig"></div>
+                    <div class="form-group" style="grid-column:span 2;"><label>Eligibility (English)</label><input
+                            type="text" id="s-elig-en"></div>
+                    <div class="form-group"><label>Deadline</label><input type="text" id="s-deadline"
+                            placeholder="e.g. 31 March 2026"></div>
+                    <div class="form-group"><label>Apply Link</label><input type="url" id="s-link"></div>
+                    <button type="submit" class="premium-btn" style="grid-column:span 2;cursor:pointer;">Add
+                        Scholarship</button>
+                </form>
+            </div>
+            <div class="card" style="padding:2rem; margin-top:2rem;">
+                <h3>Current Scholarships</h3>
+                <div id="admin-scholarships-list" style="margin-top:1rem; display:grid; gap:0.75rem;"></div>
+            </div>
+        </div>
+
+        <!-- Notices Section -->
+        <div id="notices-mgmt" class="mgmt-section" style="display:none; margin-top:2rem;">
+            <div class="card" style="padding:2rem;">
+                <h3>📢 Add Notice</h3>
+                <form id="notice-form"
+                    style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-top:1.5rem;">
+                    <div class="form-group"><label>Title (Hindi)</label><input type="text" id="n-title" required></div>
+                    <div class="form-group"><label>Title (English)</label><input type="text" id="n-title-en" required>
+                    </div>
+                    <div class="form-group"><label>Type</label>
+                        <select id="n-type"
+                            style="width:100%;padding:0.75rem;border:1px solid #e2e8f0;border-radius:0.5rem;">
+                            <option value="general">General</option>
+                            <option value="result">Result</option>
+                            <option value="admit_card">Admit Card</option>
+                            <option value="admission">Admission</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Link</label><input type="url" id="n-link"></div>
+                    <div class="form-group" style="grid-column:span 2;"><label>Content (Hindi)</label><textarea
+                            id="n-content"
+                            style="width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:0.75rem;"></textarea>
+                    </div>
+                    <div class="form-group" style="grid-column:span 2;"><label>Content (English)</label><textarea
+                            id="n-content-en"
+                            style="width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:0.75rem;"></textarea>
+                    </div>
+                    <button type="submit" class="premium-btn" style="grid-column:span 2;cursor:pointer;">Add
+                        Notice</button>
+                </form>
+            </div>
+            <div class="card" style="padding:2rem; margin-top:2rem;">
+                <h3>Current Notices</h3>
+                <div id="admin-notices-list" style="margin-top:1rem; display:grid; gap:0.75rem;"></div>
+            </div>
+        </div>
+
+        <!-- Teachers Section -->
+        <div id="teachers-mgmt" class="mgmt-section" style="display:none; margin-top:2rem;">
+            <div class="card" style="padding:2rem;">
+                <h3>👨‍🏫 Add Teacher</h3>
+                <form id="teacher-form"
+                    style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-top:1.5rem;">
+                    <div class="form-group"><label>Name (Hindi)</label><input type="text" id="t-name" required></div>
+                    <div class="form-group"><label>Name (English)</label><input type="text" id="t-name-en"></div>
+                    <div class="form-group"><label>Subject (Hindi)</label><input type="text" id="t-subject"></div>
+                    <div class="form-group"><label>Subject (English)</label><input type="text" id="t-subject-en"></div>
+                    <div class="form-group"><label>Institution Name</label><input type="text" id="t-inst"></div>
+                    <div class="form-group"><label>Qualification</label><input type="text" id="t-qual"
+                            placeholder="e.g. M.Sc, B.Ed"></div>
+                    <div class="form-group"><label>Experience (Years)</label><input type="number" id="t-exp" min="0"
+                            value="0"></div>
+                    <div class="form-group"><label>Contact</label><input type="text" id="t-contact"></div>
+                    <button type="submit" class="premium-btn" style="grid-column:span 2;cursor:pointer;">Add
+                        Teacher</button>
+                </form>
+            </div>
+            <div class="card" style="padding:2rem; margin-top:2rem;">
+                <h3>Teachers List</h3>
+                <div id="admin-teachers-list" style="margin-top:1rem; display:grid; gap:0.75rem;"></div>
+            </div>
+        </div>
+
+        <!-- Feedback Section -->
+        <div id="feedback-mgmt" class="mgmt-section" style="display:none; margin-top:2rem;">
+            <div class="card" style="padding:2rem;">
+                <h3>📝 Submitted Feedback & Complaints</h3>
+                <div id="admin-feedback-list" style="margin-top:1.5rem; display:grid; gap:0.75rem;"></div>
+            </div>
+        </div>
+
+        <!-- Audit Log Section -->
+        <div id="auditlog-mgmt" class="mgmt-section" style="display:none; margin-top:2rem;">
+            <div class="card" style="padding:2rem;">
+                <h3>🗒️ Admin Audit Log</h3>
+                <div id="admin-audit-list" style="margin-top:1.5rem; display:grid; gap:0.5rem; font-size:0.9rem;"></div>
+            </div>
+        </div>
+
     </div>
 
+    <!-- jsPDF for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         // Check authentication
         if (sessionStorage.getItem('adminAuthenticated') !== 'true') {
@@ -545,6 +682,238 @@
                 console.error(err);
             }
         });
+
+        // Extended showSection to load new sections
+        const originalShowSection = showSection;
+        showSection = function (id, event) {
+            document.querySelectorAll('.mgmt-section').forEach(s => s.style.display = 'none');
+            document.querySelectorAll('.filter-btn:not(#logout-btn)').forEach(btn => btn.classList.remove('active'));
+            const section = document.getElementById(id);
+            if (section) section.style.display = 'block';
+            if (event && event.target) event.target.classList.add('active');
+            if (id === 'ads-mgmt') fetchAdminAds();
+            if (id === 'institutions-mgmt') fetchAdminInstitutions();
+            if (id === 'analytics-mgmt') fetchAnalytics();
+            if (id === 'scholarships-mgmt') fetchAdminScholarships();
+            if (id === 'notices-mgmt') fetchAdminNotices();
+            if (id === 'teachers-mgmt') fetchAdminTeachers();
+            if (id === 'feedback-mgmt') fetchAdminFeedback();
+            if (id === 'auditlog-mgmt') fetchAuditLog();
+        };
+
+        // --- Analytics ---
+        async function fetchAnalytics() {
+            const box = document.getElementById('analytics-content');
+            try {
+                const res = await fetch(`${API_URL}/admin/analytics`);
+                const d = await res.json();
+                box.innerHTML = `
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin-bottom:2rem;">
+                        <div style="background:#eff6ff;border-radius:12px;padding:1.25rem;text-align:center;"><div style="font-size:2rem;font-weight:800;color:#2563eb;">${d.institutions.total}</div><div style="font-size:0.8rem;color:#64748b;font-weight:600;">Total Institutions</div></div>
+                        <div style="background:#f0fdf4;border-radius:12px;padding:1.25rem;text-align:center;"><div style="font-size:2rem;font-weight:800;color:#15803d;">${d.pageViews.total}</div><div style="font-size:0.8rem;color:#64748b;font-weight:600;">Total Page Views</div></div>
+                        <div style="background:#fef3c7;border-radius:12px;padding:1.25rem;text-align:center;"><div style="font-size:2rem;font-weight:800;color:#d97706;">${d.pageViews.today}</div><div style="font-size:0.8rem;color:#64748b;font-weight:600;">Today's Views</div></div>
+                        <div style="background:#f5f3ff;border-radius:12px;padding:1.25rem;text-align:center;"><div style="font-size:2rem;font-weight:800;color:#7c3aed;">${d.feedback}</div><div style="font-size:0.8rem;color:#64748b;font-weight:600;">Feedback Received</div></div>
+                        <div style="background:#fdf2f8;border-radius:12px;padding:1.25rem;text-align:center;"><div style="font-size:2rem;font-weight:800;color:#be185d;">${d.scholarships}</div><div style="font-size:0.8rem;color:#64748b;font-weight:600;">Scholarships</div></div>
+                        <div style="background:#ecfdf5;border-radius:12px;padding:1.25rem;text-align:center;"><div style="font-size:2rem;font-weight:800;color:#0f766e;">${d.teachers}</div><div style="font-size:0.8rem;color:#64748b;font-weight:600;">Teachers Listed</div></div>
+                    </div>
+                    <h4 style="margin-bottom:1rem;font-weight:700;">🔥 Popular Pages</h4>
+                    <div style="display:grid;gap:0.5rem;">
+                        ${(d.popularPages || []).map(p => `
+                            <div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem 1rem;background:#f8fafc;border-radius:8px;font-size:0.9rem;">
+                                <span>${p.page}</span><strong style="color:#2563eb;">${p.views} views</strong>
+                            </div>`).join('') || '<p style="color:#64748b;">No page view data yet.</p>'}
+                    </div>
+                `;
+            } catch (e) { box.innerHTML = '<p style="color:#ef4444;">Error loading analytics.</p>'; }
+        }
+
+        // --- Scholarships ---
+        async function fetchAdminScholarships() {
+            const list = document.getElementById('admin-scholarships-list');
+            try {
+                const res = await fetch(`${API_URL}/scholarships`);
+                const data = await res.json();
+                list.innerHTML = data.map(s => `
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;background:#fff;border:1px solid #e2e8f0;border-radius:8px;">
+                        <div><strong>${s.title}</strong><br><small style="color:#64748b;">${s.title_en} | ${s.amount || 'N/A'} | Deadline: ${s.deadline || 'N/A'}</small></div>
+                        <button onclick="deleteScholarship(${s.id})" style="color:#ef4444;background:none;border:none;cursor:pointer;font-weight:600;">Delete</button>
+                    </div>`).join('') || '<p style="color:#64748b;">No scholarships yet.</p>';
+            } catch (e) { console.error(e); }
+        }
+
+        document.getElementById('scholarship-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = { title: document.getElementById('s-title').value, title_en: document.getElementById('s-title-en').value, amount: document.getElementById('s-amount').value, category: document.getElementById('s-category').value, eligibility: document.getElementById('s-elig').value, eligibility_en: document.getElementById('s-elig-en').value, deadline: document.getElementById('s-deadline').value, link: document.getElementById('s-link').value };
+            try {
+                const res = await fetch(`${API_URL}/admin/scholarships`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                if (res.ok) { alert('Scholarship added!'); e.target.reset(); fetchAdminScholarships(); }
+                else { alert('Failed to add scholarship'); }
+            } catch (err) { alert('Error'); }
+        });
+
+        async function deleteScholarship(id) {
+            if (!confirm('Delete this scholarship?')) return;
+            await fetch(`${API_URL}/admin/scholarships/${id}`, { method: 'DELETE' });
+            fetchAdminScholarships();
+        }
+
+        // --- Notices ---
+        async function fetchAdminNotices() {
+            const list = document.getElementById('admin-notices-list');
+            try {
+                const res = await fetch(`${API_URL}/notices`);
+                const data = await res.json();
+                list.innerHTML = data.map(n => `
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;background:#fff;border:1px solid #e2e8f0;border-radius:8px;">
+                        <div><strong>${n.title}</strong><br><small style="color:#64748b;">${n.notice_type} | ${new Date(n.date).toLocaleDateString()}</small></div>
+                        <button onclick="deleteNotice(${n.id})" style="color:#ef4444;background:none;border:none;cursor:pointer;font-weight:600;">Delete</button>
+                    </div>`).join('') || '<p style="color:#64748b;">No notices yet.</p>';
+            } catch (e) { console.error(e); }
+        }
+
+        document.getElementById('notice-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = { title: document.getElementById('n-title').value, title_en: document.getElementById('n-title-en').value, content: document.getElementById('n-content').value, content_en: document.getElementById('n-content-en').value, notice_type: document.getElementById('n-type').value, link: document.getElementById('n-link').value };
+            try {
+                const res = await fetch(`${API_URL}/admin/notices`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                if (res.ok) { alert('Notice added!'); e.target.reset(); fetchAdminNotices(); }
+                else { alert('Failed to add notice'); }
+            } catch (err) { alert('Error'); }
+        });
+
+        async function deleteNotice(id) {
+            if (!confirm('Delete this notice?')) return;
+            await fetch(`${API_URL}/admin/notices/${id}`, { method: 'DELETE' });
+            fetchAdminNotices();
+        }
+
+        // --- Teachers ---
+        async function fetchAdminTeachers() {
+            const list = document.getElementById('admin-teachers-list');
+            try {
+                const res = await fetch(`${API_URL}/teachers`);
+                const data = await res.json();
+                list.innerHTML = data.map(t => `
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;background:#fff;border:1px solid #e2e8f0;border-radius:8px;">
+                        <div><strong>${t.name}</strong><br><small style="color:#64748b;">${t.subject || 'N/A'} | ${t.institution_name || 'N/A'} | ${t.experience_years || 0} yrs exp</small></div>
+                        <button onclick="deleteTeacher(${t.id})" style="color:#ef4444;background:none;border:none;cursor:pointer;font-weight:600;">Delete</button>
+                    </div>`).join('') || '<p style="color:#64748b;">No teachers yet.</p>';
+            } catch (e) { console.error(e); }
+        }
+
+        document.getElementById('teacher-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = { name: document.getElementById('t-name').value, name_en: document.getElementById('t-name-en').value, subject: document.getElementById('t-subject').value, subject_en: document.getElementById('t-subject-en').value, institution_name: document.getElementById('t-inst').value, qualification: document.getElementById('t-qual').value, experience_years: parseInt(document.getElementById('t-exp').value) || 0, contact: document.getElementById('t-contact').value };
+            try {
+                const res = await fetch(`${API_URL}/admin/teachers`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                if (res.ok) { alert('Teacher added!'); e.target.reset(); fetchAdminTeachers(); }
+                else { alert('Failed'); }
+            } catch (err) { alert('Error'); }
+        });
+
+        async function deleteTeacher(id) {
+            if (!confirm('Delete this teacher?')) return;
+            await fetch(`${API_URL}/admin/teachers/${id}`, { method: 'DELETE' });
+            fetchAdminTeachers();
+        }
+
+        // --- Feedback ---
+        async function fetchAdminFeedback() {
+            const list = document.getElementById('admin-feedback-list');
+            try {
+                const res = await fetch(`${API_URL}/admin/feedback`);
+                const data = await res.json();
+                if (!data.length) { list.innerHTML = '<p style="color:#64748b;">No feedback submitted yet.</p>'; return; }
+                list.innerHTML = data.map(f => `
+                    <div style="padding:1rem;background:#fff;border:1px solid #e2e8f0;border-radius:8px;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                            <div>
+                                <strong>${f.name}</strong> <span style="padding:0.2rem 0.5rem;background:#f1f5f9;border-radius:4px;font-size:0.75rem;font-weight:600;">${f.feedback_type}</span>
+                                ${f.status === 'resolved' ? '<span style="padding:0.2rem 0.5rem;background:#dcfce7;color:#15803d;border-radius:4px;font-size:0.75rem;margin-left:0.5rem;">Resolved</span>' : ''}
+                                <br><small style="color:#64748b;">${f.contact || 'No contact'} | ${f.institution_name || 'General'} | ${new Date(f.created_at).toLocaleDateString()}</small>
+                            </div>
+                            <div style="display:flex;gap:0.5rem;">
+                                <button onclick="markResolved(${f.id})" style="color:#15803d;background:#dcfce7;border:none;border-radius:6px;padding:0.25rem 0.6rem;cursor:pointer;font-size:0.8rem;font-weight:600;">✓ Resolve</button>
+                                <button onclick="deleteFeedback(${f.id})" style="color:#ef4444;background:none;border:none;cursor:pointer;font-weight:600;font-size:0.85rem;">✕</button>
+                            </div>
+                        </div>
+                        <p style="margin-top:0.5rem;color:#374151;font-size:0.9rem;">${f.message}</p>
+                    </div>`).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function markResolved(id) {
+            await fetch(`${API_URL}/admin/feedback/${id}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'resolved' }) });
+            fetchAdminFeedback();
+        }
+
+        async function deleteFeedback(id) {
+            if (!confirm('Delete this feedback?')) return;
+            await fetch(`${API_URL}/admin/feedback/${id}`, { method: 'DELETE' });
+            fetchAdminFeedback();
+        }
+
+        // --- Audit Log ---
+        async function fetchAuditLog() {
+            const list = document.getElementById('admin-audit-list');
+            try {
+                const res = await fetch(`${API_URL}/admin/audit-log`);
+                const data = await res.json();
+                if (!data.length) { list.innerHTML = '<p style="color:#64748b;">No audit records yet.</p>'; return; }
+                list.innerHTML = data.map(log => `
+                    <div style="display:flex;gap:1rem;align-items:center;padding:0.6rem 0.85rem;background:#f8fafc;border-radius:6px;border:1px solid #e2e8f0;">
+                        <span style="font-size:0.75rem;color:#94a3b8;min-width:140px;">${new Date(log.created_at).toLocaleString()}</span>
+                        <span style="font-weight:700;color:#2563eb;min-width:80px;font-size:0.8rem;">${log.admin_username}</span>
+                        <span style="background:#eff6ff;color:#1e40af;padding:0.15rem 0.5rem;border-radius:4px;font-size:0.75rem;font-weight:600;">${log.action}</span>
+                        <span style="color:#475569;font-size:0.85rem;">${log.details || ''}</span>
+                    </div>`).join('');
+            } catch (e) { list.innerHTML = '<p style="color:#ef4444;">Error loading audit log.</p>'; }
+        }
+
+        // --- PDF Report ---
+        async function generatePDF() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                const res = await fetch(`${API_URL}/institutions`);
+                const insts = await res.json();
+                const statsRes = await fetch(`${API_URL}/stats`);
+                const stats = await statsRes.json();
+
+                doc.setFontSize(18);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Dantewada District Education Report', 14, 20);
+
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'normal');
+                doc.text(`Generated: ${new Date().toLocaleString('en-IN')}`, 14, 30);
+                doc.text(`Total Institutions: ${stats.total} | Schools: ${stats.schools} | Colleges: ${stats.colleges} | ITI: ${stats.iti}`, 14, 38);
+
+                doc.setFontSize(13);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Institution List', 14, 52);
+
+                let y = 60;
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'normal');
+
+                insts.forEach((inst, i) => {
+                    if (y > 270) { doc.addPage(); y = 20; }
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(`${i + 1}. ${inst.name_en}`, 14, y);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(`   Type: ${inst.type_en} | Location: ${inst.location_en}`, 14, y + 5);
+                    y += 13;
+                });
+
+                doc.save('Dantewada_Education_Report.pdf');
+                alert('PDF Report downloaded!');
+            } catch (e) {
+                alert('Error generating PDF. Make sure backend is running.');
+                console.error(e);
+            }
+        }
 
         // Initial load: show institutions section by default
         document.getElementById('institutions-mgmt').style.display = 'block';

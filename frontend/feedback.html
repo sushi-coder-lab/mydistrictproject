@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback & Complaints | Dantewada Education Portal</title>
+    <meta name="description" content="Submit feedback or complaints about schools and education in Dantewada.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .page-hero {
+            background: linear-gradient(135deg, #0369a1, #0ea5e9);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .page-hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-hero p {
+            font-size: 1.1rem;
+            opacity: 0.85;
+        }
+
+        .page-content {
+            max-width: 700px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .feedback-form {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+        }
+
+        .form-row {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row label {
+            display: block;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .form-row input,
+        .form-row select,
+        .form-row textarea {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+            background: #f8fafc;
+        }
+
+        .form-row input:focus,
+        .form-row select:focus,
+        .form-row textarea:focus {
+            border-color: #0ea5e9;
+            background: white;
+        }
+
+        .form-row textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #0369a1, #0ea5e9);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-msg {
+            display: none;
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+            font-weight: 600;
+            margin-top: 1.5rem;
+        }
+
+        .error-msg {
+            display: none;
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+            font-weight: 600;
+            margin-top: 1.5rem;
+        }
+
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.25rem;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .info-card .icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-card h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .info-card p {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="glass-header">
+        <div class="header-container">
+            <div class="logo-container" onclick="window.location.href='index.html'">
+                <div class="logo-img">📚</div>
+                <div class="logo-text">
+                    <div class="logo-title">Dantewada<span>Edu</span></div>
+                    <div class="logo-subtitle">District Education Directory</div>
+                </div>
+            </div>
+            <nav class="main-nav">
+                <ul class="nav-links">
+                    <li><a href="index.html">🏠 Home</a></li>
+                    <li><a href="scholarship.html">🎓 Scholarships</a></li>
+                    <li><a href="notices.html">📢 Notices</a></li>
+                    <li><a href="teachers.html">👨‍🏫 Teachers</a></li>
+                    <li><a href="gallery.html">🖼️ Gallery</a></li>
+                    <li><a href="map.html">🗺️ Map</a></li>
+                    <li><a href="feedback.html" style="color:#0369a1">📝 Feedback</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button class="mobile-toggle" aria-label="Toggle Menu"><span class="bar"></span><span
+                        class="bar"></span></button>
+            </div>
+        </div>
+    </header>
+
+    <div class="page-hero">
+        <h1>📝 Feedback & Complaints</h1>
+        <p>अपनी बात हम तक पहुंचाएं — हम सुनते हैं</p>
+    </div>
+
+    <div class="page-content">
+        <div class="info-cards">
+            <div class="info-card">
+                <div class="icon">💬</div>
+                <h4>General Feedback</h4>
+                <p>Share your thoughts and suggestions</p>
+            </div>
+            <div class="info-card">
+                <div class="icon">⚠️</div>
+                <h4>Complaints</h4>
+                <p>Report issues or grievances</p>
+            </div>
+            <div class="info-card">
+                <div class="icon">💡</div>
+                <h4>Suggestions</h4>
+                <p>Ideas to improve the portal</p>
+            </div>
+        </div>
+
+        <div class="feedback-form">
+            <h2
+                style="font-size:1.4rem; font-weight:800; color:#0f172a; margin-bottom:1.75rem; border-bottom:2px solid #e2e8f0; padding-bottom:1rem;">
+                Submit Your Feedback</h2>
+
+            <div class="form-row">
+                <label for="fb-name">Your Name *</label>
+                <input type="text" id="fb-name" placeholder="आपका नाम / Your name" required>
+            </div>
+            <div class="form-row">
+                <label for="fb-contact">Phone / Email (optional)</label>
+                <input type="text" id="fb-contact" placeholder="Contact details for follow-up">
+            </div>
+            <div class="form-row">
+                <label for="fb-type">Feedback Type *</label>
+                <select id="fb-type">
+                    <option value="feedback">💬 General Feedback</option>
+                    <option value="complaint">⚠️ Complaint / शिकायत</option>
+                    <option value="suggestion">💡 Suggestion / सुझाव</option>
+                    <option value="appreciation">🌟 Appreciation</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label for="fb-inst">School/College Name (if applicable)</label>
+                <input type="text" id="fb-inst" placeholder="Institution name">
+            </div>
+            <div class="form-row">
+                <label for="fb-message">Your Message *</label>
+                <textarea id="fb-message" placeholder="Please share your feedback in detail...  
+अपनी बात विस्तार से लिखें..."></textarea>
+            </div>
+
+            <button class="submit-btn" id="submit-btn" onclick="submitFeedback()">Send Feedback ✉️</button>
+            <div class="success-msg" id="success-msg">✅ Thank you! Your feedback has been submitted successfully. We
+                will review it soon.</div>
+            <div class="error-msg" id="error-msg">❌ Something went wrong. Please try again later.</div>
+        </div>
+    </div>
+
+    <footer style="background:#1e293b; color:white; text-align:center; padding:2rem; margin-top:4rem; opacity:0.9;">
+        <p>© 2026 Dantewada Education Portal | <a href="index.html" style="color:#93c5fd;">Back to Home</a></p>
+    </footer>
+
+    <script>
+        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'
+            ? 'http://localhost:5000/api' : 'https://mydistrictproject-5.onrender.com/api';
+
+        async function submitFeedback() {
+            const name = document.getElementById('fb-name').value.trim();
+            const contact = document.getElementById('fb-contact').value.trim();
+            const feedback_type = document.getElementById('fb-type').value;
+            const institution_name = document.getElementById('fb-inst').value.trim();
+            const message = document.getElementById('fb-message').value.trim();
+
+            if (!name || !message) { alert('Please fill in your name and message.'); return; }
+
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+
+            try {
+                const res = await fetch(`${API_URL}/feedback`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, contact, feedback_type, message, institution_name })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    document.getElementById('success-msg').style.display = 'block';
+                    document.getElementById('error-msg').style.display = 'none';
+                    document.getElementById('fb-name').value = '';
+                    document.getElementById('fb-contact').value = '';
+                    document.getElementById('fb-inst').value = '';
+                    document.getElementById('fb-message').value = '';
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (e) {
+                document.getElementById('error-msg').style.display = 'block';
+                document.getElementById('success-msg').style.display = 'none';
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Send Feedback ✉️';
+        }
+
+        const toggle = document.querySelector('.mobile-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        if (toggle) toggle.addEventListener('click', () => { navLinks.classList.toggle('active'); toggle.classList.toggle('active'); });
+    </script>
+</body>
+
+</html>

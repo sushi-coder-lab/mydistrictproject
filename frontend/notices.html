@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notices & Results | Dantewada Education Portal</title>
+    <meta name="description" content="Latest exam results, admit cards, and notices for Dantewada students.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .page-hero {
+            background: linear-gradient(135deg, #0f766e, #14b8a6);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .page-hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-hero p {
+            font-size: 1.1rem;
+            opacity: 0.85;
+        }
+
+        .page-content {
+            max-width: 1100px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .filter-tab {
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            border: 2px solid #0f766e;
+            background: white;
+            color: #0f766e;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .filter-tab.active,
+        .filter-tab:hover {
+            background: #0f766e;
+            color: white;
+        }
+
+        .notices-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .notice-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: flex-start;
+            gap: 1.25rem;
+            transition: all 0.3s;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        }
+
+        .notice-card:hover {
+            transform: translateX(4px);
+            box-shadow: 0 8px 20px rgba(15, 118, 110, 0.1);
+            border-color: #5eead4;
+        }
+
+        .notice-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+            width: 3.5rem;
+            height: 3.5rem;
+            background: #f0fdfa;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notice-body h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.3rem;
+        }
+
+        .notice-body p {
+            font-size: 0.9rem;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .notice-meta {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.75rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .n-badge {
+            padding: 0.2rem 0.65rem;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .badge-result {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-admit_card {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-admission {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-general {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .n-date {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .n-link {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #0f766e;
+            text-decoration: none;
+        }
+
+        .n-link:hover {
+            text-decoration: underline;
+        }
+
+        .loading-msg {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="glass-header">
+        <div class="header-container">
+            <div class="logo-container" onclick="window.location.href='index.html'">
+                <div class="logo-img">📚</div>
+                <div class="logo-text">
+                    <div class="logo-title">Dantewada<span>Edu</span></div>
+                    <div class="logo-subtitle">District Education Directory</div>
+                </div>
+            </div>
+            <nav class="main-nav">
+                <ul class="nav-links">
+                    <li><a href="index.html">🏠 Home</a></li>
+                    <li><a href="scholarship.html">🎓 Scholarships</a></li>
+                    <li><a href="notices.html" style="color:#0f766e">📢 Notices</a></li>
+                    <li><a href="teachers.html">👨‍🏫 Teachers</a></li>
+                    <li><a href="gallery.html">🖼️ Gallery</a></li>
+                    <li><a href="map.html">🗺️ Map</a></li>
+                    <li><a href="feedback.html">📝 Feedback</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button class="mobile-toggle" aria-label="Toggle Menu"><span class="bar"></span><span
+                        class="bar"></span></button>
+            </div>
+        </div>
+    </header>
+
+    <div class="page-hero">
+        <h1>📢 Notices & Results</h1>
+        <p>परीक्षा परिणाम, एडमिट कार्ड और महत्वपूर्ण सूचनाएं</p>
+    </div>
+
+    <div class="page-content">
+        <div class="filter-tabs">
+            <button class="filter-tab active" onclick="filterNotices('', this)">All / सभी</button>
+            <button class="filter-tab" onclick="filterNotices('result', this)">📊 Results</button>
+            <button class="filter-tab" onclick="filterNotices('admit_card', this)">🪪 Admit Cards</button>
+            <button class="filter-tab" onclick="filterNotices('admission', this)">📝 Admissions</button>
+        </div>
+        <div id="notices-list" class="notices-list">
+            <div class="loading-msg">Loading notices...</div>
+        </div>
+    </div>
+
+    <footer style="background:#1e293b; color:white; text-align:center; padding:2rem; margin-top:4rem; opacity:0.9;">
+        <p>© 2026 Dantewada Education Portal | <a href="index.html" style="color:#93c5fd;">Back to Home</a></p>
+    </footer>
+
+    <script>
+        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'
+            ? 'http://localhost:5000/api' : 'https://mydistrictproject-5.onrender.com/api';
+
+        function getNoticeIcon(type) {
+            const icons = { result: '📊', admit_card: '🪪', admission: '📝', general: '📢' };
+            return icons[type] || '📢';
+        }
+
+        function getBadgeClass(type) {
+            return `badge-${type || 'general'}`;
+        }
+
+        async function loadNotices(type = '') {
+            const list = document.getElementById('notices-list');
+            list.innerHTML = '<div class="loading-msg">Loading...</div>';
+            try {
+                const url = type ? `${API_URL}/notices?type=${type}` : `${API_URL}/notices`;
+                const res = await fetch(url);
+                const data = await res.json();
+                if (!data.length) { list.innerHTML = '<div class="loading-msg">No notices found.</div>'; return; }
+                list.innerHTML = data.map(n => `
+                    <div class="notice-card">
+                        <div class="notice-icon">${getNoticeIcon(n.notice_type)}</div>
+                        <div class="notice-body">
+                            <h3>${n.title}</h3>
+                            <p>${n.content || ''}</p>
+                            <div class="notice-meta">
+                                <span class="n-badge ${getBadgeClass(n.notice_type)}">${n.notice_type ? n.notice_type.toUpperCase().replace('_', ' ') : 'NOTICE'}</span>
+                                <span class="n-date">📅 ${new Date(n.date).toLocaleDateString('en-IN')}</span>
+                                ${n.link ? `<a href="${n.link}" target="_blank" class="n-link">View Details →</a>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                list.innerHTML = '<div class="loading-msg">Error loading notices.</div>';
+            }
+        }
+
+        function filterNotices(type, btn) {
+            document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            loadNotices(type);
+        }
+
+        const toggle = document.querySelector('.mobile-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        if (toggle) toggle.addEventListener('click', () => { navLinks.classList.toggle('active'); toggle.classList.toggle('active'); });
+
+        loadNotices();
+    </script>
+</body>
+
+</html>
