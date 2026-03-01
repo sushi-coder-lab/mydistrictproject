@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wall of Fame | Toppers of Dantewada</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #fbbf24;
+            --silver: #94a3b8;
+            --bronze: #b45309;
+            --premium-gradient: linear-gradient(135deg, #1e1b4b, #312e81, #4338ca);
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: #0f172a;
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] body {
+            background-color: #020617;
+            color: #f8fafc;
+        }
+
+        .topper-hero {
+            background: var(--premium-gradient);
+            padding: 8rem 2rem 10rem;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .topper-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://www.transparenttextures.com/patterns/cubes.png');
+            opacity: 0.1;
+        }
+
+        .topper-hero h1 {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: -2px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .topper-hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        .filter-section {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: -3rem auto 3rem;
+            padding: 0 1rem;
+            position: relative;
+            z-index: 100;
+            flex-wrap: wrap;
+        }
+
+        .topper-filter-btn {
+            background: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="dark"] .topper-filter-btn {
+            background: #1e293b;
+            color: white;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .topper-filter-btn.active {
+            background: var(--gold);
+            color: #000;
+            border-color: var(--gold);
+            transform: scale(1.05);
+        }
+
+        .toppers-grid {
+            max-width: 1200px;
+            margin: 0 auto 5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2.5rem;
+            padding: 0 2rem;
+        }
+
+        .topper-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            animation: fadeInUp 0.8s ease both;
+        }
+
+        [data-theme="dark"] .topper-card {
+            background: #1e293b;
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .topper-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .topper-img-wrapper {
+            height: 320px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .topper-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .topper-card:hover .topper-img {
+            transform: scale(1.1);
+        }
+
+        .badge-rank {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--gold);
+            color: #000;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
+        }
+
+        .badge-year {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .topper-info {
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .topper-info h3 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .topper-info p.school {
+            color: var(--secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .achievement-pill {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.1);
+            color: #6366f1;
+            padding: 0.4rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .topper-details {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            opacity: 0.8;
+            margin-top: 0.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="dark"] .topper-details {
+            border-top-color: rgba(255, 255, 255, 0.05);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .topper-hero {
+                padding: 6rem 1rem 8rem;
+            }
+
+            .toppers-grid {
+                padding: 0 1rem;
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="glass-header">
+        <div class="header-container">
+            <div class="logo-container" onclick="window.location.href='index.html'">
+                <div class="logo-img">📚</div>
+                <div class="logo-text">
+                    <div class="logo-title">Dantewada<span>Edu</span></div>
+                    <div class="logo-subtitle">District Education Directory</div>
+                </div>
+            </div>
+            <nav class="main-nav">
+                <ul class="nav-links">
+                    <li><a href="index.html">🏠 Home</a></li>
+                    <li><a href="scholarship.html">🎓 Scholarships</a></li>
+                    <li><a href="notices.html">📢 Notices</a></li>
+                    <li><a href="toppers.html" style="color:var(--gold); font-weight:700;">🏆 Wall of Fame</a></li>
+                    <li><a href="resources.html">📚 Library</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button id="theme-toggle" class="notification-btn">🌙</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="topper-hero">
+        <h1 data-i18n="topper_title">🏆 Wall of Fame</h1>
+        <p data-i18n="topper_subtitle">Celebrating the brilliance of students who made Dantewada proud in Board Exams,
+            Sports, and Cultural Events.</p>
+    </div>
+
+    <div class="filter-section">
+        <button class="topper-filter-btn active" data-filter="All">All Achievements</button>
+        <button class="topper-filter-btn" data-filter="Board">Board Toppers</button>
+        <button class="topper-filter-btn" data-filter="Sports">Sports Stars</button>
+        <button class="topper-filter-btn" data-filter="Cultural">Cultural Heroes</button>
+    </div>
+
+    <div class="toppers-grid" id="toppers-grid">
+        <!-- Loaded via JS -->
+    </div>
+
+    <footer style="background:#020617; color:white; text-align:center; padding:5rem 2rem;">
+        <p style="opacity: 0.5;">© 2026 Dantewada Education Portal | <a href="index.html"
+                style="color:var(--gold);">Back to Home</a></p>
+    </footer>
+
+    <script src="main.js"></script>
+    <script>
+        async function fetchToppers(category = '') {
+            const grid = document.getElementById('toppers-grid');
+            grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center;">Loading Toppers...</p>';
+
+            try {
+                let url = `${API_URL}/toppers`;
+                if (category && category !== 'All') url += `?category=${category}`;
+
+                const res = await fetch(url);
+                const toppers = await res.json();
+
+                if (toppers.length === 0) {
+                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center;">No toppers found in this category.</p>';
+                    return;
+                }
+
+                grid.innerHTML = toppers.map((t, index) => `
+                    <div class="topper-card" style="animation-delay: ${index * 0.1}s">
+                        <div class="topper-img-wrapper">
+                            <span class="badge-rank">${t.rank} Rank</span>
+                            <img src="${t.photo_url || 'https://via.placeholder.com/400x500'}" class="topper-img" alt="${t.name_en}">
+                            <span class="badge-year">${t.year}</span>
+                        </div>
+                        <div class="topper-info">
+                            <div class="achievement-pill">${t.percentage !== '-' ? t.percentage : t.category}</div>
+                            <h3>${currentLanguage === 'hi' ? t.name : t.name_en}</h3>
+                            <p class="school">${currentLanguage === 'hi' ? t.school_name : t.school_name_en}</p>
+                            <div class="topper-details">
+                                ${currentLanguage === 'hi' ? t.details : t.details_en}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; color:red;">Failed to load toppers.</p>';
+            }
+        }
+
+        // Filter functionality
+        document.querySelectorAll('.topper-filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.topper-filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                fetchToppers(btn.dataset.filter);
+            });
+        });
+
+        // Init
+        window.addEventListener('load', () => {
+            fetchToppers();
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        });
+    </script>
+</body>
+
+</html>

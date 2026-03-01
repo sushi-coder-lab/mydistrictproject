@@ -153,6 +153,48 @@ async function initDb() {
             details TEXT,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         );
+
+        CREATE TABLE IF NOT EXISTS toppers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            name_en TEXT NOT NULL,
+            photo_url TEXT,
+            rank TEXT,
+            percentage TEXT,
+            year INTEGER,
+            school_name TEXT,
+            school_name_en TEXT,
+            category TEXT DEFAULT 'Board',
+            details TEXT,
+            details_en TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS resources (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            title_en TEXT NOT NULL,
+            class TEXT,
+            subject TEXT,
+            subject_en TEXT,
+            type TEXT CHECK(type IN ('Textbook', 'PYQ', 'Model Paper', 'Notes')),
+            board TEXT DEFAULT 'CGBSE',
+            download_url TEXT NOT NULL,
+            year INTEGER,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS exam_alerts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            exam_name TEXT NOT NULL,
+            exam_name_en TEXT NOT NULL,
+            exam_date TEXT NOT NULL,
+            description TEXT,
+            description_en TEXT,
+            link TEXT,
+            status TEXT DEFAULT 'upcoming',
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
     `);
 
     // Run migrations for existing tables
@@ -308,6 +350,48 @@ async function initDb() {
             ('श्रीमती प्रिया शर्मा', 'Smt. Priya Sharma', 'अंग्रेजी', 'English', 'केंद्रीय विद्यालय', 'MA English, B.Ed', 10, '9654321098'),
             ('श्री महेंद्र सिंह', 'Shri Mahendra Singh', 'सामाजिक विज्ञान', 'Social Science', 'एकलव्य आदर्श आवासीय विद्यालय', 'MA History, B.Ed', 7, '9543210987'),
             ('डॉ. नंदिनी वर्मा', 'Dr. Nandini Verma', 'रसायन विज्ञान', 'Chemistry', 'शासकीय महाविद्यालय', 'Ph.D Chemistry', 20, '9432109876')
+        `);
+    }
+
+    // Seed toppers
+    const toppersCount = await db.get('SELECT COUNT(*) as count FROM toppers');
+    if (toppersCount.count === 0) {
+        await db.run(`
+            INSERT INTO toppers (name, name_en, photo_url, rank, percentage, year, school_name, school_name_en, category, details, details_en)
+            VALUES 
+            ('राहुल सोरी', 'Rahul Sori', 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400', '1st', '98.5%', 2025, 'जवाहर नवोदय विद्यालय', 'JNV Dantewada', 'Board', 'जिले की मेरिट लिस्ट में प्रथम स्थान', '1st Rank in District Merit List'),
+            ('अंजलि मंडावी', 'Anjali Mandavi', 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400', '2nd', '97.2%', 2025, 'आस्था विद्या मंदिर', 'Astha Vidya Mandir', 'Board', 'विज्ञान संकाय में जिला टॉपर', 'District Topper in Science Stream'),
+            ('अमन नाग', 'Aman Nag', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400', 'Gold Medal', '-', 2025, 'शासकीय उच्चतर माध्यमिक विद्यालय', 'Govt Higher Secondary School', 'Sports', 'राज्य स्तरीय एथलेटिक्स मीट', 'State Level Athletics Meet')
+        `);
+    }
+
+    // Seed resources
+    const resourcesCount = await db.get('SELECT COUNT(*) as count FROM resources');
+    if (resourcesCount.count === 0) {
+        await db.run(`
+            INSERT INTO resources (title, title_en, class, subject, subject_en, type, board, download_url, year)
+            VALUES 
+            ('विज्ञान - कक्षा 10वीं', 'Science - Class 10th', '10th', 'विज्ञान', 'Science', 'Textbook', 'CGBSE', 'https://scert.cg.gov.in/pdf/textbook/10th/Science.pdf', 2024),
+            ('गणित - कक्षा 12वीं', 'Mathematics - Class 12th', '12th', 'गणित', 'Mathematics', 'Textbook', 'CGBSE', 'https://scert.cg.gov.in/pdf/textbook/12th/Maths.pdf', 2024),
+            ('10वीं गणित - 2024 PYQ', '10th Maths - 2024 PYQ', '10th', 'गणित', 'Mathematics', 'PYQ', 'CGBSE', '#', 2024),
+            ('12वीं भौतिकी - 2024 PYQ', '12th Physics - 2024 PYQ', '12th', 'भौतिकी', 'Physics', 'PYQ', 'CGBSE', '#', 2024),
+            ('10वीं विज्ञान मॉडल पेपर', '10th Science Model Paper', '10th', 'विज्ञान', 'Science', 'Model Paper', 'CGBSE', '#', 2025)
+        `);
+    }
+
+    // Seed exam alerts
+    const examAlertsCount = await db.get('SELECT COUNT(*) as count FROM exam_alerts');
+    if (examAlertsCount.count === 0) {
+        const nextMonth = new Date();
+        nextMonth.setMonth(nextMonth.getMonth() + 1);
+        const examDate = nextMonth.toISOString().split('T')[0];
+
+        await db.run(`
+            INSERT INTO exam_alerts (exam_name, exam_name_en, exam_date, description, description_en, link)
+            VALUES 
+            ('CGBSE 10वीं बोर्ड परीक्षा', 'CGBSE 10th Board Exam', '${examDate}', 'वार्षिक मुख्य परीक्षा', 'Annual Main Examination', 'https://cgbse.nic.in'),
+            ('CGBSE 12वीं बोर्ड परीक्षा', 'CGBSE 12th Board Exam', '${examDate}', 'वार्षिक मुख्य परीक्षा', 'Annual Main Examination', 'https://cgbse.nic.in'),
+            ('JEE Mains - सत्र 2', 'JEE Mains - Session 2', '${examDate}', 'इंजीनियरिंग प्रवेश परीक्षा', 'Engineering Entrance Exam', 'https://jeemain.nta.nic.in')
         `);
     }
 

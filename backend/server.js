@@ -148,6 +148,324 @@ app.get('/api/stats', async (req, res) => {
     }
 });
 
+// --- User Authentication ---
+
+app.post('/api/auth/signup', async (req, res) => {
+    try {
+        const { name, username, email, password } = req.body;
+        if (!name || !username || !email || !password) {
+            return res.status(400).json({ error: 'All fields are required' });
+        }
+        await db.run('INSERT INTO users (name, username, email, password) VALUES (?, ?, ?, ?)', [name, username, email, password]);
+        res.status(201).json({ message: 'User created successfully' });
+    } catch (err) {
+        if (err.message.includes('UNIQUE constraint failed')) {
+            res.status(400).json({ error: 'Username or email already exists' });
+        } else {
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+});
+
+app.post('/api/auth/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        if (!username || !password) return res.status(400).json({ error: 'Username and password are required' });
+        const user = await db.get('SELECT * FROM users WHERE username = ? AND password = ?', [username, password]);
+        if (user) {
+            res.json({ message: 'Login successful', user: { id: user.id, name: user.name, username: user.username } });
+        } else {
+            res.status(401).json({ error: 'Invalid username or password' });
+        }
+    } catch (err) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Admin Login
+app.post('/api/admin/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const admin = await db.get('SELECT * FROM admins WHERE username = ? AND password = ?', [username, password]);
+        if (admin) {
+            res.json({ message: 'Admin login successful', username: admin.username, role: admin.role || 'admin' });
+        } else {
+            res.status(401).json({ error: 'Invalid admin credentials' });
+        }
+    } catch (err) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// --- Ads API ---
+
+app.get('/api/ads', async (req, res) => {
+    try {
+        const ads = await db.all('SELECT * FROM ads ORDER BY date DESC');
+        res.json(ads);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/admin/ads', async (req, res) => {
+    try {
+        const { title, title_en, content, content_en, image_url, link, admin_user } = req.body;
+        await db.run('INSERT INTO ads (title, title_en, content, content_en, image_url, link) VALUES (?, ?, ?, ?, ?, ?)', [title, title_en, content, content_en, image_url, link]);
+        await logAudit(admin_user || 'admin', 'ADD_AD', `Added ad: ${title_en}`);
+        res.status(201).json({ message: 'Ad created successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/admin/ads/:id', async (req, res) => {
+    try {
+        const { admin_user } = req.body || {};
+        await db.run('DELETE FROM ads WHERE id = ?', [req.params.id]);
+        await logAudit(admin_user || 'admin', 'DELETE_AD', `Deleted ad ID: ${req.params.id}`);
+        res.json({ message: 'Ad deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- Institutions Management API ---
+
+app.post('/api/admin/institutions', async (req, res) => {
+    try {
+        const { name, name_en, type, type_en, location, location_en, streams, streams_en, subjects, subjects_en, facilities, facilities_en, contact_details, contact_details_en, admission_process, admission_process_en, map_location, image_url, enrollment_count, latitude, longitude, admin_user } = req.body;
+        const result = await db.run(`
+            INSERT INTO institutions (name, name_en, type, type_en, location, location_en, streams, streams_en, subjects, subjects_en, facilities, facilities_en, contact_details, contact_details_en, admission_process, admission_process_en, map_location, image_url, enrollment_count, latitude, longitude)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [name, name_en, type, type_en, location, location_en, streams, streams_en, subjects, subjects_en, facilities, facilities_en, contact_details, contact_details_en, admission_process, admission_process_en, map_location, image_url, enrollment_count || 0, latitude, longitude]);
+        await logAudit(admin_user || 'admin', 'ADD_INSTITUTION', `Added institution: ${name_en}`);
+        res.status(201).json({ message: 'Institution created successfully', id: result.lastID });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.put('/api/admin/institutions/:id', async (req, res) => {
+    try {
+        const { name, name_en, type, type_en, location, location_en, streams, streams_en, subjects, subjects_en, facilities, facilities_en, contact_details, contact_details_en, admission_process, admission_process_en, map_location, image_url, enrollment_count, latitude, longitude, admin_user } = req.body;
+        await db.run(`
+            UPDATE institutions SET name=?, name_en=?, type=?, type_en=?, location=?, location_en=?, streams=?, streams_en=?, subjects=?, subjects_en=?, facilities=?, facilities_en=?, contact_details=?, contact_details_en=?, admission_process=?, admission_process_en=?, map_location=?, image_url=?, enrollment_count=?, latitude=?, longitude=?
+            WHERE id = ?
+        `, [name, name_en, type, type_en, location, location_en, streams, streams_en, subjects, subjects_en, facilities, facilities_en, contact_details, contact_details_en, admission_process, admission_process_en, map_location, image_url, enrollment_count || 0, latitude, longitude, req.params.id]);
+        await logAudit(admin_user || 'admin', 'EDIT_INSTITUTION', `Edited institution ID: ${req.params.id}`);
+        res.json({ message: 'Institution updated successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/admin/institutions/:id', async (req, res) => {
+    try {
+        const { admin_user } = req.body || {};
+        await db.run('DELETE FROM institutions WHERE id = ?', [req.params.id]);
+        await logAudit(admin_user || 'admin', 'DELETE_INSTITUTION', `Deleted institution ID: ${req.params.id}`);
+        res.json({ message: 'Institution deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- Institution Images API ---
+
+app.get('/api/institutions/:id/images', async (req, res) => {
+    try {
+        const images = await db.all('SELECT * FROM institution_images WHERE institution_id = ?', [req.params.id]);
+        res.json(images);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/admin/institutions/:id/images', async (req, res) => {
+    try {
+        const { image_url } = req.body;
+        await db.run('INSERT INTO institution_images (institution_id, image_url) VALUES (?, ?)', [req.params.id, image_url]);
+        res.status(201).json({ message: 'Image added successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/admin/institutions/images/:imageId', async (req, res) => {
+    try {
+        await db.run('DELETE FROM institution_images WHERE id = ?', [req.params.imageId]);
+        res.json({ message: 'Image deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- Updates Management ---
+
+app.post('/api/admin/updates', async (req, res) => {
+    try {
+        const { title, title_en, content, content_en, admin_user } = req.body;
+        await db.run('INSERT INTO updates (title, title_en, content, content_en) VALUES (?, ?, ?, ?)', [title, title_en, content, content_en]);
+        await logAudit(admin_user || 'admin', 'ADD_UPDATE', `Added update: ${title_en}`);
+        res.status(201).json({ message: 'Update created successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/admin/updates/:id', async (req, res) => {
+    try {
+        const { admin_user } = req.body || {};
+        await db.run('DELETE FROM updates WHERE id = ?', [req.params.id]);
+        await logAudit(admin_user || 'admin', 'DELETE_UPDATE', `Deleted update ID: ${req.params.id}`);
+        res.json({ message: 'Update deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- Scholarships API ---
+
+app.get('/api/scholarships', async (req, res) => {
+    try {
+        const { category } = req.query;
+        let query = 'SELECT * FROM scholarships';
+        const params = [];
+        if (category) { query += ' WHERE category = ?'; params.push(category); }
+        query += ' ORDER BY date_added DESC';
+        const scholarships = await db.all(query, params);
+        res.json(scholarships);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- Toppers API ---
+
+app.get('/api/toppers', async (req, res) => {
+    try {
+        const { category, year } = req.query;
+        let query = 'SELECT * FROM toppers';
+        const params = [];
+        if (category || year) {
+            query += ' WHERE';
+            if (category) {
+                query += ' category = ?';
+                params.push(category);
+            }
+            if (year) {
+                if (category) query += ' AND';
+                query += ' year = ?';
+                params.push(year);
+            }
+        }
+        query += ' ORDER BY year DESC, rank ASC';
+        const toppers = await db.all(query, params);
+        res.json(toppers);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/admin/toppers', async (req, res) => {
+    try {
+        const { name, name_en, photo_url, rank, percentage, year, school_name, school_name_en, category, details, details_en, admin_user } = req.body;
+        await db.run(`
+            INSERT INTO toppers (name, name_en, photo_url, rank, percentage, year, school_name, school_name_en, category, details, details_en)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [name, name_en, photo_url, rank, percentage, year, school_name, school_name_en, category, details, details_en]);
+        await logAudit(admin_user || 'admin', 'ADD_TOPPER', `Added topper: ${name_en}`);
+        res.status(201).json({ message: 'Topper added successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/admin/toppers/:id', async (req, res) => {
+    try {
+        const { admin_user } = req.body || {};
+        await db.run('DELETE FROM toppers WHERE id = ?', [req.params.id]);
+        await logAudit(admin_user || 'admin', 'DELETE_TOPPER', `Deleted topper ID: ${req.params.id}`);
+        res.json({ message: 'Topper deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- Resources API ---
+
+app.get('/api/resources', async (req, res) => {
+    try {
+        const { class: cls, type, subject } = req.query;
+        let query = 'SELECT * FROM resources';
+        const params = [];
+        const filters = [];
+        if (cls) { filters.push('class = ?'); params.push(cls); }
+        if (type) { filters.push('type = ?'); params.push(type); }
+        if (subject) { filters.push('subject = ?'); params.push(subject); }
+
+        if (filters.length > 0) {
+            query += ' WHERE ' + filters.join(' AND ');
+        }
+        query += ' ORDER BY year DESC, title_en ASC';
+        const resources = await db.all(query, params);
+        res.json(resources);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/admin/resources', async (req, res) => {
+    try {
+        const { title, title_en, class: cls, subject, subject_en, type, board, download_url, year, admin_user } = req.body;
+        await db.run(`
+            INSERT INTO resources (title, title_en, class, subject, subject_en, type, board, download_url, year)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [title, title_en, cls, subject, subject_en, type, board, download_url, year]);
+        await logAudit(admin_user || 'admin', 'ADD_RESOURCE', `Added resource: ${title_en}`);
+        res.status(201).json({ message: 'Resource added successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/admin/resources/:id', async (req, res) => {
+    try {
+        const { admin_user } = req.body || {};
+        await db.run('DELETE FROM resources WHERE id = ?', [req.params.id]);
+        await logAudit(admin_user || 'admin', 'DELETE_RESOURCE', `Deleted resource ID: ${req.params.id}`);
+        res.json({ message: 'Resource deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- Exam Alerts API ---
+
+app.get('/api/exam-alerts', async (req, res) => {
+    try {
+        const alerts = await db.all('SELECT * FROM exam_alerts WHERE status = "upcoming" ORDER BY exam_date ASC');
+        res.json(alerts);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/admin/exam-alerts', async (req, res) => {
+    try {
+        const { exam_name, exam_name_en, exam_date, description, description_en, link, admin_user } = req.body;
+        await db.run(`
+            INSERT INTO exam_alerts (exam_name, exam_name_en, exam_date, description, description_en, link)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `, [exam_name, exam_name_en, exam_date, description, description_en, link]);
+        await logAudit(admin_user || 'admin', 'ADD_EXAM_ALERT', `Added exam alert: ${exam_name_en}`);
+        res.status(201).json({ message: 'Exam alert created successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // --- Audit Log ---
 app.get('/api/admin/audit-log', async (req, res) => {
     try {

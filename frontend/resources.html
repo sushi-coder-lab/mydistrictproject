@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Library | E-Resource Hub Dantewada</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --book-grad: linear-gradient(135deg, #059669, #10b981);
+            --pyq-grad: linear-gradient(135deg, #7c3aed, #8b5cf6);
+            --notes-grad: linear-gradient(135deg, #ea580c, #f97316);
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+
+        [data-theme="dark"] body {
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+
+        .library-hero {
+            background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)),
+                url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=1600');
+            background-size: cover;
+            background-position: center;
+            padding: 6rem 2rem;
+            text-align: center;
+            color: white;
+            border-bottom: 5px solid var(--gold);
+        }
+
+        .search-container-lib {
+            max-width: 800px;
+            margin: -2rem auto 3rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 1rem;
+            z-index: 10;
+            position: relative;
+        }
+
+        [data-theme="dark"] .search-container-lib {
+            background: #1e293b;
+        }
+
+        .lib-input {
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            outline: none;
+            width: 100%;
+        }
+
+        [data-theme="dark"] .lib-input {
+            background: #0f172a;
+            border-color: #334155;
+            color: white;
+        }
+
+        .resource-grid {
+            max-width: 1200px;
+            margin: 0 auto 5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 0 2rem;
+        }
+
+        .resource-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border-left: 8px solid #cbd5e1;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        [data-theme="dark"] .resource-card {
+            background: #1e293b;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .resource-card.type-textbook {
+            border-left-color: #10b981;
+        }
+
+        .resource-card.type-pyq {
+            border-left-color: #8b5cf6;
+        }
+
+        .resource-card.type-notes {
+            border-left-color: #f97316;
+        }
+
+        .res-type {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .res-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+
+        .res-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .download-btn {
+            background: var(--gold);
+            color: black;
+            text-decoration: none;
+            padding: 0.8rem;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 700;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .download-btn:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+
+        .sidebar-filters {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-chip {
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            background: #e2e8f0;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        [data-theme="dark"] .filter-chip {
+            background: #334155;
+            color: white;
+        }
+
+        .filter-chip.active {
+            background: var(--gold);
+            color: black;
+        }
+
+        @media (max-width: 768px) {
+            .search-container-lib {
+                grid-template-columns: 1fr;
+                margin-top: -1rem;
+                margin-bottom: 2rem;
+            }
+
+            .resource-grid {
+                padding: 0 1rem;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="glass-header">
+        <div class="header-container">
+            <div class="logo-container" onclick="window.location.href='index.html'">
+                <div class="logo-img">📚</div>
+                <div class="logo-text">
+                    <div class="logo-title">Dantewada<span>Edu</span></div>
+                </div>
+            </div>
+            <nav class="main-nav">
+                <ul class="nav-links">
+                    <li><a href="index.html">🏠 Home</a></li>
+                    <li><a href="toppers.html">🏆 Toppers</a></li>
+                    <li><a href="resources.html" style="color:var(--gold);">📚 Library</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button id="theme-toggle" class="notification-btn">🌙</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="library-hero">
+        <h1 style="font-size: 3rem; font-weight: 800; margin-bottom: 1rem;">E-Resource Hub</h1>
+        <p style="font-size: 1.2rem; opacity: 0.8;">Access all your Board Textbooks, PYQs (Previous Year Questions), and
+            Model Papers here.</p>
+    </div>
+
+    <div class="search-container-lib">
+        <input type="text" id="lib-search" placeholder="Search by subject or year..." class="lib-input">
+        <select id="class-filter" class="lib-input" style="width: auto;">
+            <option value="">All Classes</option>
+            <option value="10th">Class 10th</option>
+            <option value="12th">Class 12th</option>
+        </select>
+        <button onclick="fetchResources()" class="primary-btn" style="padding: 1rem 2rem;">Search</button>
+    </div>
+
+    <div class="sidebar-filters">
+        <button class="filter-chip active" data-type="">All Items</button>
+        <button class="filter-chip" data-type="Textbook">Textbooks</button>
+        <button class="filter-chip" data-type="PYQ">Question Papers</button>
+        <button class="filter-chip" data-type="Model Paper">Model Papers</button>
+    </div>
+
+    <div id="resource-grid" class="resource-grid">
+        <!-- Content via JS -->
+    </div>
+
+    <script src="main.js"></script>
+    <script>
+        let currentTypeFilter = '';
+
+        async function fetchResources() {
+            const grid = document.getElementById('resource-grid');
+            const search = document.getElementById('lib-search').value;
+            const cls = document.getElementById('class-filter').value;
+
+            grid.innerHTML = '<p style="grid-column:1/-1; text-align:center;">Finding resources...</p>';
+
+            try {
+                let url = `${API_URL}/resources?`;
+                if (search) url += `subject=${search}&`;
+                if (cls) url += `class=${cls}&`;
+                if (currentTypeFilter) url += `type=${currentTypeFilter}`;
+
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (data.length === 0) {
+                    grid.innerHTML = '<p style="grid-column:1/-1; text-align:center;">No resources found. Try another search.</p>';
+                    return;
+                }
+
+                grid.innerHTML = data.map(r => `
+                    <div class="resource-card type-${r.type.toLowerCase().replace(' ', '-')}">
+                        <div>
+                            <span class="res-type" style="color: ${getTypeColor(r.type)}">${r.type}</span>
+                            <h3 class="res-title">${currentLanguage === 'hi' ? r.title : r.title_en}</h3>
+                            <div class="res-meta">
+                                <span>🎯 ${r.board}</span>
+                                <span>📅 ${r.year}</span>
+                                <span>🎓 ${r.class}</span>
+                            </div>
+                        </div>
+                        <a href="${r.download_url}" class="download-btn" target="_blank">
+                            📥 Download PDF
+                        </a>
+                    </div>
+                `).join('');
+            } catch (err) {
+                grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:red;">Connection error.</p>';
+            }
+        }
+
+        function getTypeColor(type) {
+            switch (type) {
+                case 'Textbook': return '#10b981';
+                case 'PYQ': return '#8b5cf6';
+                case 'Model Paper': return '#3b82f6';
+                default: return '#f97316';
+            }
+        }
+
+        document.querySelectorAll('.filter-chip').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentTypeFilter = btn.dataset.type;
+                fetchResources();
+            });
+        });
+
+        window.addEventListener('load', () => {
+            fetchResources();
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        });
+    </script>
+</body>
+
+</html>
