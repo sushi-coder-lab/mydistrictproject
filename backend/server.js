@@ -170,3 +170,13 @@ app.delete('/api/admin/ads/:id', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
+// TEMPORARY: One-time admin password reset endpoint — REMOVE AFTER USE
+app.get('/api/reset-admin-pw', async (req, res) => {
+    try {
+        await db.run(`UPDATE admins SET password = 'admin&143b' WHERE username = 'admin'`);
+        res.json({ message: 'Admin password updated successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
