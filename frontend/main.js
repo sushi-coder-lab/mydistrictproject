@@ -534,6 +534,30 @@ async function showDetails(id) {
     try {
         const response = await fetch(`${API_URL}/institutions/${id}`);
         const inst = await response.json();
+
+        // Fetch gallery images
+        let galleryHtml = '';
+        try {
+            const galleryRes = await fetch(`${API_URL}/institutions/${id}/images`);
+            const images = await galleryRes.json();
+            if (images && images.length > 0) {
+                galleryHtml = `
+                    <div class="gallery-container" style="margin-top: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">🖼️ Gallery</h3>
+                        <div class="gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;">
+                            ${images.map(img => `
+                                <div class="gallery-item" style="cursor: pointer;" onclick="window.open('${img.image_url}', '_blank')">
+                                    <img src="${img.image_url}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        } catch (gErr) {
+            console.error('Error fetching gallery:', gErr);
+        }
+
         const t = translations[currentLanguage];
 
         const name = currentLanguage === 'en' ? inst.name_en : inst.name;
@@ -546,7 +570,7 @@ async function showDetails(id) {
         const admission = currentLanguage === 'en' ? inst.admission_process_en : inst.admission_process;
 
         modalBody.innerHTML = `
-            <div style="background-image: url('${inst.image_url}'); height: 300px; background-size: cover; background-position: center; border-radius: 1rem; margin-bottom: 2rem;"></div>
+            <div style="background-image: url('${inst.image_url || 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=800'}'); height: 300px; background-size: cover; background-position: center; border-radius: 1rem; margin-bottom: 2rem;"></div>
             <span class="card-tag">${type}</span>
             <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">${name}</h1>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
@@ -557,19 +581,22 @@ async function showDetails(id) {
                     <p>${streams}</p>
                     <h3 style="margin-top: 1rem;">📚 ${t.subjects_label}</h3>
                     <ul class="subjects-list">
-                        ${subjects.split(/[।,]\s+/).filter(s => s.trim()).map(s => `<li>${s.trim()}</li>`).join('')}
+                        ${subjects ? subjects.split(/[।,]\s+/).filter(s => s.trim()).map(s => `<li>${s.trim()}</li>`).join('') : 'Various Subjects'}
                     </ul>
                 </div>
                 <div>
                     <h3>🏢 ${t.facilities_label}</h3>
-                    <p>${facilities}</p>
+                    <p>${facilities || 'N/A'}</p>
                     <h3 style="margin-top: 1rem;">📞 ${t.contact_label}</h3>
-                    <p>${contact}</p>
+                    <p>${contact || 'N/A'}</p>
                 </div>
             </div>
             <h3>📝 ${t.admission_label}</h3>
-            <p style="margin-bottom: 2rem;">${admission}</p>
-            <a href="${inst.map_location}" target="_blank" class="filter-btn active" style="text-decoration: none; display: inline-block;">${t.view_on_map}</a>
+            <p style="margin-bottom: 2rem;">${admission || 'N/A'}</p>
+            ${galleryHtml}
+            <div style="margin-top: 2rem;">
+                <a href="${inst.map_location || '#'}" target="_blank" class="filter-btn active" style="text-decoration: none; display: inline-block;">${t.view_on_map}</a>
+            </div>
         `;
         if (modal) modal.style.display = 'flex';
     } catch (error) {

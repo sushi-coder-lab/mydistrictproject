@@ -66,6 +66,13 @@ async function initDb() {
             link TEXT,
             date TEXT DEFAULT CURRENT_TIMESTAMP
         );
+
+        CREATE TABLE IF NOT EXISTS institution_images (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            institution_id INTEGER NOT NULL,
+            image_url TEXT NOT NULL,
+            FOREIGN KEY (institution_id) REFERENCES institutions (id) ON DELETE CASCADE
+        );
     `);
 
     const fs = require('fs');

@@ -77,11 +77,126 @@
         <div class="admin-header">
             <h2>Management Dashboard</h2>
             <div>
-                <button class="filter-btn active" onclick="showSection('institutions-form')">Add Institution</button>
-                <button class="filter-btn" onclick="showSection('ads-mgmt')" style="margin-left: 0.5rem;">Manage
+                <button class="filter-btn active" onclick="showSection('institutions-mgmt', event)">Add
+                    Institution</button>
+                <button class="filter-btn" onclick="showSection('ads-mgmt', event)" style="margin-left: 0.5rem;">Manage
                     Ads</button>
                 <button id="logout-btn" class="filter-btn"
                     style="margin-left: 1rem; background: #fee2e2; color: #ef4444; border-color: #fecaca;">Logout</button>
+            </div>
+        </div>
+
+        <div id="institutions-mgmt" class="mgmt-section" style="display: none; margin-top: 2rem;">
+            <div class="card" style="padding: 2rem;">
+                <h3 id="inst-form-title">Add New Institution</h3>
+                <form id="institution-form"
+                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+                    <input type="hidden" id="inst-id">
+                    <div class="form-group">
+                        <label>Name (Hindi)</label>
+                        <input type="text" id="inst-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Name (English)</label>
+                        <input type="text" id="inst-name-en" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select id="inst-type"
+                            style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
+                            <option value="School">School</option>
+                            <option value="College">College</option>
+                            <option value="ITI">ITI</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Type (English)</label>
+                        <input type="text" id="inst-type-en" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Location (Hindi)</label>
+                        <input type="text" id="inst-location" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Location (English)</label>
+                        <input type="text" id="inst-location-en" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Streams (Hindi)</label>
+                        <input type="text" id="inst-streams" placeholder="e.g. कला, विज्ञान, वाणिज्य">
+                    </div>
+                    <div class="form-group">
+                        <label>Streams (English)</label>
+                        <input type="text" id="inst-streams-en" placeholder="e.g. Arts, Science, Commerce">
+                    </div>
+                    <div class="form-group">
+                        <label>Subjects (Hindi)</label>
+                        <input type="text" id="inst-subjects">
+                    </div>
+                    <div class="form-group">
+                        <label>Subjects (English)</label>
+                        <input type="text" id="inst-subjects-en">
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Facilities (Hindi)</label>
+                        <textarea id="inst-facilities"
+                            style="width: 100%; border-radius: 8px; border: 1px solid #e2e8f0; padding: 0.75rem;"></textarea>
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Facilities (English)</label>
+                        <textarea id="inst-facilities-en"
+                            style="width: 100%; border-radius: 8px; border: 1px solid #e2e8f0; padding: 0.75rem;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Contact (Hindi)</label>
+                        <input type="text" id="inst-contact">
+                    </div>
+                    <div class="form-group">
+                        <label>Contact (English)</label>
+                        <input type="text" id="inst-contact-en">
+                    </div>
+                    <div class="form-group">
+                        <label>Admission Process (Hindi)</label>
+                        <input type="text" id="inst-admission">
+                    </div>
+                    <div class="form-group">
+                        <label>Admission Process (English)</label>
+                        <input type="text" id="inst-admission-en">
+                    </div>
+                    <div class="form-group">
+                        <label>Main Image URL</label>
+                        <input type="url" id="inst-image" placeholder="URL to main image">
+                    </div>
+                    <div class="form-group">
+                        <label>Map Location URL</label>
+                        <input type="url" id="inst-map" placeholder="Google Maps URL">
+                    </div>
+
+                    <div id="multi-images-section"
+                        style="grid-column: span 2; display: none; margin-top: 1rem; border-top: 1px solid #eee; padding-top: 1rem;">
+                        <h4>Manage Institution Gallery</h4>
+                        <div id="gallery-list" style="display: flex; gap: 1rem; flex-wrap: wrap; margin: 1rem 0;"></div>
+                        <div style="display: flex; gap: 1rem;">
+                            <input type="url" id="new-gallery-image" placeholder="New Image URL" style="flex: 1;">
+                            <button type="button" onclick="addGalleryImage()" class="premium-btn"
+                                style="width: auto; padding: 0.5rem 1rem;">Add Image</button>
+                        </div>
+                    </div>
+
+                    <div style="grid-column: span 2; display: flex; gap: 1rem;">
+                        <button type="submit" id="submit-inst-btn" class="premium-btn"
+                            style="flex: 1; cursor: pointer;">Save Institution</button>
+                        <button type="button" onclick="resetInstForm()" class="filter-btn"
+                            style="flex: 1; cursor: pointer;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card" style="padding: 2rem; margin-top: 2rem;">
+                <h3>Institutions List</h3>
+                <div id="admin-inst-list" style="margin-top: 1.5rem; display: grid; gap: 1rem;">
+                    <!-- Institutions will be listed here -->
+                </div>
             </div>
         </div>
 
@@ -150,13 +265,220 @@
             ? 'http://localhost:5000/api'
             : 'https://dantewada-backend.onrender.com/api';
 
-        function showSection(id) {
+        function showSection(id, event) {
             document.querySelectorAll('.mgmt-section').forEach(s => s.style.display = 'none');
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+
             const section = document.getElementById(id);
             if (section) section.style.display = 'block';
 
+            // Set active button
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+
             if (id === 'ads-mgmt') fetchAdminAds();
+            if (id === 'institutions-mgmt') fetchAdminInstitutions();
         }
+
+        // --- Institutions Management ---
+
+        async function fetchAdminInstitutions() {
+            const list = document.getElementById('admin-inst-list');
+            try {
+                const res = await fetch(`${API_URL}/institutions`);
+                const insts = await res.json();
+                list.innerHTML = insts.map(inst => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        <div>
+                            <strong style="display:block;">${inst.name}</strong>
+                            <small style="color: #64748b;">${inst.type} | ${inst.location}</small>
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button onclick="editInstitution(${inst.id})" style="color: #6366f1; background: none; border: none; cursor: pointer; font-weight: 600;">Edit</button>
+                            <button onclick="deleteInstitution(${inst.id})" style="color: #ef4444; background: none; border: none; cursor: pointer; font-weight: 600;">Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function editInstitution(id) {
+            try {
+                const res = await fetch(`${API_URL}/institutions/${id}`);
+                const inst = await res.json();
+
+                document.getElementById('inst-id').value = inst.id;
+                document.getElementById('inst-name').value = inst.name;
+                document.getElementById('inst-name-en').value = inst.name_en;
+                document.getElementById('inst-type').value = inst.type;
+                document.getElementById('inst-type-en').value = inst.type_en;
+                document.getElementById('inst-location').value = inst.location;
+                document.getElementById('inst-location-en').value = inst.location_en;
+                document.getElementById('inst-streams').value = inst.streams || '';
+                document.getElementById('inst-streams-en').value = inst.streams_en || '';
+                document.getElementById('inst-subjects').value = inst.subjects || '';
+                document.getElementById('inst-subjects-en').value = inst.subjects_en || '';
+                document.getElementById('inst-facilities').value = inst.facilities || '';
+                document.getElementById('inst-facilities-en').value = inst.facilities_en || '';
+                document.getElementById('inst-contact').value = inst.contact_details || '';
+                document.getElementById('inst-contact-en').value = inst.contact_details_en || '';
+                document.getElementById('inst-admission').value = inst.admission_process || '';
+                document.getElementById('inst-admission-en').value = inst.admission_process_en || '';
+                document.getElementById('inst-image').value = inst.image_url || '';
+                document.getElementById('inst-map').value = inst.map_location || '';
+
+                document.getElementById('inst-form-title').innerText = 'Edit Institution';
+                document.getElementById('multi-images-section').style.display = 'block';
+                fetchGallery(id);
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (err) {
+                alert('Failed to fetch institution details');
+            }
+        }
+
+        function resetInstForm() {
+            document.getElementById('institution-form').reset();
+            document.getElementById('inst-id').value = '';
+            document.getElementById('inst-form-title').innerText = 'Add New Institution';
+            document.getElementById('multi-images-section').style.display = 'none';
+            document.getElementById('gallery-list').innerHTML = ''; // Clear gallery images
+        }
+
+        document.getElementById('institution-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('inst-id').value;
+            const data = {
+                name: document.getElementById('inst-name').value,
+                name_en: document.getElementById('inst-name-en').value,
+                type: document.getElementById('inst-type').value,
+                type_en: document.getElementById('inst-type-en').value,
+                location: document.getElementById('inst-location').value,
+                location_en: document.getElementById('inst-location-en').value,
+                streams: document.getElementById('inst-streams').value,
+                streams_en: document.getElementById('inst-streams-en').value,
+                subjects: document.getElementById('inst-subjects').value,
+                subjects_en: document.getElementById('inst-subjects-en').value,
+                facilities: document.getElementById('inst-facilities').value,
+                facilities_en: document.getElementById('inst-facilities-en').value,
+                contact_details: document.getElementById('inst-contact').value,
+                contact_details_en: document.getElementById('inst-contact-en').value,
+                admission_process: document.getElementById('inst-admission').value,
+                admission_process_en: document.getElementById('inst-admission-en').value,
+                image_url: document.getElementById('inst-image').value,
+                map_location: document.getElementById('inst-map').value
+            };
+
+            try {
+                const method = id ? 'PUT' : 'POST';
+                const url = id ? `${API_URL}/admin/institutions/${id}` : `${API_URL}/admin/institutions`;
+
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    alert(id ? 'Institution updated!' : 'Institution added!');
+                    resetInstForm();
+                    fetchAdminInstitutions();
+                } else {
+                    const errorData = await res.json();
+                    alert(`Operation failed: ${errorData.message || res.statusText}`);
+                }
+            } catch (err) {
+                alert('Operation failed');
+                console.error(err);
+            }
+        });
+
+        async function deleteInstitution(id) {
+            if (!confirm('Delete this institution?')) return;
+            try {
+                const res = await fetch(`${API_URL}/admin/institutions/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    fetchAdminInstitutions();
+                } else {
+                    const errorData = await res.json();
+                    alert(`Delete failed: ${errorData.message || res.statusText}`);
+                }
+            } catch (err) {
+                alert('Delete failed');
+                console.error(err);
+            }
+        }
+
+        // --- Gallery Management ---
+
+        async function fetchGallery(instId) {
+            const list = document.getElementById('gallery-list');
+            try {
+                const res = await fetch(`${API_URL}/institutions/${instId}/images`);
+                const images = await res.json();
+                list.innerHTML = images.map(img => `
+                    <div style="position: relative;">
+                        <img src="${img.image_url}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                        <button onclick="deleteGalleryImage(${img.id}, ${instId})" style="position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px;">×</button>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function addGalleryImage() {
+            const instId = document.getElementById('inst-id').value;
+            const urlInput = document.getElementById('new-gallery-image');
+            const image_url = urlInput.value;
+            if (!image_url) {
+                alert('Please enter an image URL.');
+                return;
+            }
+            if (!instId) {
+                alert('Please save the institution first before adding gallery images.');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/admin/institutions/${instId}/images`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image_url })
+                });
+                if (res.ok) {
+                    urlInput.value = '';
+                    fetchGallery(instId);
+                } else {
+                    const errorData = await res.json();
+                    alert(`Failed to add image: ${errorData.message || res.statusText}`);
+                }
+            } catch (err) {
+                alert('Failed to add image');
+                console.error(err);
+            }
+        }
+
+        async function deleteGalleryImage(imageId, instId) {
+            if (!confirm('Delete this gallery image?')) return;
+            try {
+                const res = await fetch(`${API_URL}/admin/institutions/images/${imageId}`, { method: 'DELETE' });
+                if (res.ok) {
+                    fetchGallery(instId);
+                } else {
+                    const errorData = await res.json();
+                    alert(`Delete failed: ${errorData.message || res.statusText}`);
+                }
+            } catch (err) {
+                alert('Delete failed');
+                console.error(err);
+            }
+        }
+
+        // --- Ads Management ---
 
         async function fetchAdminAds() {
             const list = document.getElementById('admin-ads-list');
@@ -180,10 +502,16 @@
         async function deleteAd(id) {
             if (!confirm('Are you sure you want to delete this ad?')) return;
             try {
-                await fetch(`${API_URL}/admin/ads/${id}`, { method: 'DELETE' });
-                fetchAdminAds();
+                const res = await fetch(`${API_URL}/admin/ads/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    fetchAdminAds();
+                } else {
+                    const errorData = await res.json();
+                    alert(`Failed to delete ad: ${errorData.message || res.statusText}`);
+                }
             } catch (err) {
                 alert('Failed to delete ad');
+                console.error(err);
             }
         }
 
@@ -208,11 +536,19 @@
                     alert('Ad added successfully!');
                     e.target.reset();
                     fetchAdminAds();
+                } else {
+                    const errorData = await res.json();
+                    alert(`Failed to add ad: ${errorData.message || res.statusText}`);
                 }
             } catch (err) {
                 alert('Failed to add ad');
+                console.error(err);
             }
         });
+
+        // Initial load: show institutions section by default
+        document.getElementById('institutions-mgmt').style.display = 'block';
+        fetchAdminInstitutions();
     </script>
 </body>
 

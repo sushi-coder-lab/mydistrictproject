@@ -171,3 +171,103 @@ app.delete('/api/admin/ads/:id', async (req, res) => {
     }
 });
 
+// --- Institutions Management API ---
+
+app.post('/api/admin/institutions', async (req, res) => {
+    try {
+        const {
+            name, name_en, type, type_en, location, location_en,
+            streams, streams_en, subjects, subjects_en,
+            facilities, facilities_en, contact_details, contact_details_en,
+            admission_process, admission_process_en, map_location, image_url
+        } = req.body;
+
+        const result = await db.run(`
+            INSERT INTO institutions (
+                name, name_en, type, type_en, location, location_en, 
+                streams, streams_en, subjects, subjects_en, 
+                facilities, facilities_en, contact_details, contact_details_en, 
+                admission_process, admission_process_en, map_location, image_url
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [
+            name, name_en, type, type_en, location, location_en,
+            streams, streams_en, subjects, subjects_en,
+            facilities, facilities_en, contact_details, contact_details_en,
+            admission_process, admission_process_en, map_location, image_url
+        ]);
+
+        res.status(201).json({ message: 'Institution created successfully', id: result.lastID });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.put('/api/admin/institutions/:id', async (req, res) => {
+    try {
+        const {
+            name, name_en, type, type_en, location, location_en,
+            streams, streams_en, subjects, subjects_en,
+            facilities, facilities_en, contact_details, contact_details_en,
+            admission_process, admission_process_en, map_location, image_url
+        } = req.body;
+
+        await db.run(`
+            UPDATE institutions SET 
+                name = ?, name_en = ?, type = ?, type_en = ?, location = ?, location_en = ?, 
+                streams = ?, streams_en = ?, subjects = ?, subjects_en = ?, 
+                facilities = ?, facilities_en = ?, contact_details = ?, contact_details_en = ?, 
+                admission_process = ?, admission_process_en = ?, map_location = ?, image_url = ?
+            WHERE id = ?
+        `, [
+            name, name_en, type, type_en, location, location_en,
+            streams, streams_en, subjects, subjects_en,
+            facilities, facilities_en, contact_details, contact_details_en,
+            admission_process, admission_process_en, map_location, image_url,
+            req.params.id
+        ]);
+
+        res.json({ message: 'Institution updated successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/admin/institutions/:id', async (req, res) => {
+    try {
+        await db.run('DELETE FROM institutions WHERE id = ?', [req.params.id]);
+        res.json({ message: 'Institution deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- Institution Images API ---
+
+app.get('/api/institutions/:id/images', async (req, res) => {
+    try {
+        const images = await db.all('SELECT * FROM institution_images WHERE institution_id = ?', [req.params.id]);
+        res.json(images);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/admin/institutions/:id/images', async (req, res) => {
+    try {
+        const { image_url } = req.body;
+        await db.run('INSERT INTO institution_images (institution_id, image_url) VALUES (?, ?)', [req.params.id, image_url]);
+        res.status(201).json({ message: 'Image added successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/admin/institutions/images/:imageId', async (req, res) => {
+    try {
+        await db.run('DELETE FROM institution_images WHERE id = ?', [req.params.imageId]);
+        res.json({ message: 'Image deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
