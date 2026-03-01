@@ -187,13 +187,13 @@ async function initDb() {
         CREATE TABLE IF NOT EXISTS exam_alerts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             exam_name TEXT NOT NULL,
-            exam_name_en TEXT NOT NULL,
+            exam_name_en TEXT,
             exam_date TEXT NOT NULL,
             description TEXT,
             description_en TEXT,
             link TEXT,
             status TEXT DEFAULT 'upcoming',
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
     `);
 
