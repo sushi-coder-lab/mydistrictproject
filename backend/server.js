@@ -852,3 +852,99 @@ app.delete('/api/admin/feedback/:id', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
+// --- Toppers API (Phase 9) ---
+app.get('/api/toppers', async (req, res) => {
+    try {
+        const { category, year } = req.query;
+        let query = 'SELECT * FROM toppers';
+        const params = [];
+        if (category && category !== 'All') {
+            query += ' WHERE category = ?';
+            params.push(category);
+        }
+        if (year) {
+            query += (params.length > 0 ? ' AND' : ' WHERE') + ' year = ?';
+            params.push(year);
+        }
+        query += ' ORDER BY year DESC, rank ASC';
+        const toppers = await db.all(query, params);
+        res.json(toppers);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/admin/toppers', async (req, res) => {
+    try {
+        const { name, name_hi, photo_url, rank, year, school_name, school_name_hi, percentage, category, details, details_hi, admin_user } = req.body;
+        await db.run(`
+            INSERT INTO toppers (name, name_hi, photo_url, rank, year, school_name, school_name_hi, percentage, category, details, details_hi)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [name, name_hi, photo_url, rank, year, school_name, school_name_hi, percentage, category, details, details_hi]);
+        await logAudit(admin_user || 'admin', 'ADD_TOPPER', `Added topper: ${name}`);
+        res.status(201).json({ message: 'Topper added successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- Resources API (Phase 9) ---
+app.get('/api/resources', async (req, res) => {
+    try {
+        const { class: cls, type, subject } = req.query;
+        let query = 'SELECT * FROM resources';
+        const params = [];
+        const filters = [];
+        if (cls) { filters.push('class = ?'); params.push(cls); }
+        if (type) { filters.push('type = ?'); params.push(type); }
+        if (subject) { filters.push('(subject LIKE ? OR subject_hi LIKE ?)'); params.push(`%${subject}%`, `%${subject}%`); }
+
+        if (filters.length > 0) {
+            query += ' WHERE ' + filters.join(' AND ');
+        }
+        query += ' ORDER BY year DESC, title ASC';
+        const resources = await db.all(query, params);
+        res.json(resources);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/admin/resources', async (req, res) => {
+    try {
+        const { title, title_hi, class: cls, subject, subject_hi, type, board, download_url, year, admin_user } = req.body;
+        await db.run(`
+            INSERT INTO resources (title, title_hi, class, subject, subject_hi, type, board, download_url, year)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [title, title_hi, cls, subject, subject_hi, type, board, download_url, year]);
+        await logAudit(admin_user || 'admin', 'ADD_RESOURCE', `Added resource: ${title}`);
+        res.status(201).json({ message: 'Resource added successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- Exam Alerts API (Phase 9) ---
+app.get('/api/exam-alerts', async (req, res) => {
+    try {
+        const alerts = await db.all('SELECT * FROM exam_alerts WHERE status = "upcoming" ORDER BY exam_date ASC');
+        res.json(alerts);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/admin/exam-alerts', async (req, res) => {
+    try {
+        const { exam_name, exam_name_hi, exam_date, description, description_hi, link, admin_user } = req.body;
+        await db.run(`
+            INSERT INTO exam_alerts (exam_name, exam_name_hi, exam_date, description, description_hi, link)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `, [exam_name, exam_name_hi, exam_date, description, description_hi, link]);
+        await logAudit(admin_user || 'admin', 'ADD_EXAM_ALERT', `Added exam alert: ${exam_name}`);
+        res.status(201).json({ message: 'Exam alert created successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
