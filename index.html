@@ -49,10 +49,11 @@
 
             <nav class="main-nav">
                 <ul class="nav-links">
-                    <li><a href="#ads-section" data-i18n="nav_ads">Opportunities</a></li>
-                    <li><a href="#institutions" data-i18n="nav_institutions">Institutions</a></li>
-                    <li><a href="#updates-section" data-i18n="nav_updates">Updates</a></li>
-                    <li><a href="#about" data-i18n="nav_about">About</a></li>
+                    <li><a href="index.html" data-i18n="nav_home">Home</a></li>
+                    <li><a href="toppers.html" data-i18n="nav_toppers">Wall of Fame</a></li>
+                    <li><a href="resources.html" data-i18n="nav_library">Library <span class="badge-new">New</span></a>
+                    </li>
+                    <li><a href="notices.html" data-i18n="nav_updates">Updates</a></li>
                     <li class="auth-group">
                         <a href="login.html" class="signin-link" data-i18n="nav_signin">Sign In</a>
                         <a href="signup.html" class="premium-btn get-started" data-i18n="nav_getstarted">Get Started</a>
@@ -100,13 +101,31 @@
     <section class="hero" id="hero-section">
         <!-- 🌟 WORLD-CLASS PREMIUM SEARCH BAR -->
         <div class="hero-search-top">
-            <div class="search-container">
+            <div class="search-pill">
                 <div class="search-inner">
-                    <input type="text" id="main-search" placeholder="🔍  Search schools, colleges, courses..."
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="search-input" placeholder="Search by name, subject, or course..."
                         data-i18n-placeholder="search_placeholder">
-                    <button id="voice-search-btn" class="voice-btn" aria-label="Voice Search"
-                        title="Speak to search">🎤</button>
-                    <button id="search-btn" data-i18n="search_btn">✨ Find Institutions</button>
+                    <button id="voice-search-btn" class="mic-btn" title="Voice Search">🎤</button>
+                </div>
+                <button class="find-btn" id="find-btn" data-i18n="find_btn">Find Institutions</button>
+            </div>
+
+            <!-- Exam Countdown Widget -->
+            <div id="exam-countdown-container" class="exam-countdown-wrapper" style="display: none;">
+                <div class="countdown-card">
+                    <div class="countdown-label">
+                        <span class="pulse-red"></span>
+                        <span id="exam-label-en">CGBSE 10th Board</span>
+                        <span id="exam-label-hi" style="font-size: 0.9rem; opacity: 0.8;">(10वीं बोर्ड परीक्षा)</span>
+                    </div>
+                    <div class="countdown-timer">
+                        <div class="time-block"><span id="days-val">00</span><small>Days</small></div>
+                        <div class="time-block"><span id="hours-val">00</span><small>Hrs</small></div>
+                    </div>
+                    <div class="countdown-footer">
+                        <a href="resources.html" class="prep-link">Get PYQs →</a>
+                    </div>
                 </div>
             </div>
         </div>
