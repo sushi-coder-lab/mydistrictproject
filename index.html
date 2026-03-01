@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 
 <head>
     <meta charset="UTF-8">
@@ -9,6 +9,8 @@
         content="Explore and find all schools and colleges in Dantewada district, Chhattisgarh. Search by name, stream, subject, and location.">
     <meta name="keywords" content="Dantewada, Education, Schools, Colleges, ITI, Chhattisgarh, Education Directory">
     <link rel="canonical" href="https://sushi-coder-lab.github.io/mydistrictproject/">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -30,12 +32,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 </head>
 
 <body>
     <header class="glass-header">
         <div class="header-container">
-            <div class="logo-container">
+            <div class="logo-container" onclick="window.location.href='index.html'">
                 <div class="logo-img">📚</div>
                 <div class="logo-text">
                     <div class="logo-title">Dantewada<span>Edu</span></div>
@@ -48,8 +52,12 @@
                     <li><a href="#ads-section" data-i18n="nav_ads">Opportunities</a></li>
                     <li><a href="#institutions" data-i18n="nav_institutions">Institutions</a></li>
                     <li><a href="#updates-section" data-i18n="nav_updates">Updates</a></li>
+                    <li><a href="scholarship.html">🎓 Scholarships</a></li>
+                    <li><a href="notices.html">📢 Notices</a></li>
+                    <li><a href="gallery.html">🖼️ Gallery</a></li>
+                    <li><a href="map.html">🗺️ Map</a></li>
+                    <li><a href="feedback.html">📝 Feedback</a></li>
                     <li><a href="#about" data-i18n="nav_about">About</a></li>
-                    <li><a href="#contact" data-i18n="nav_contact">Contact</a></li>
                     <li class="auth-group">
                         <a href="login.html" class="signin-link" data-i18n="nav_signin">Sign In</a>
                         <a href="signup.html" class="premium-btn get-started" data-i18n="nav_getstarted">Get Started</a>
@@ -65,6 +73,9 @@
                         <option value="hi">हिन्दी</option>
                     </select>
                 </div>
+                <!-- Dark Mode Toggle -->
+                <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark mode"
+                    title="Toggle Dark Mode">🌙</button>
                 <button class="mobile-toggle" aria-label="Toggle Menu">
                     <span class="bar"></span>
                     <span class="bar"></span>
@@ -89,9 +100,59 @@
         <div class="search-container">
             <input type="text" id="main-search" placeholder="Search by name, subject, or course..."
                 data-i18n-placeholder="search_placeholder">
+            <button id="voice-search-btn" class="voice-btn" aria-label="Voice Search"
+                title="Speak to search">🎤</button>
             <button id="search-btn" data-i18n="search_btn">Find Institutions</button>
         </div>
     </div>
+
+    <!-- Quick Links Bar -->
+    <div class="quick-links-bar">
+        <a href="scholarship.html" class="quick-link">🎓 Scholarships</a>
+        <a href="notices.html" class="quick-link">📢 Results & Notices</a>
+        <a href="teachers.html" class="quick-link">👨‍🏫 Teacher Directory</a>
+        <a href="gallery.html" class="quick-link">🖼️ Photo Gallery</a>
+        <a href="map.html" class="quick-link">🗺️ Map View</a>
+        <a href="feedback.html" class="quick-link">📝 Feedback</a>
+    </div>
+
+    <!-- Statistics Section -->
+    <section class="stats-section" id="stats-section">
+        <div class="stats-header">
+            <h2 class="section-title" style="text-align:center;">📊 District Education at a Glance</h2>
+            <p
+                style="text-align:center; color: var(--secondary); margin-top: -1rem; margin-bottom: 2rem; font-size: 1rem;">
+                Dantewada जिले की शिक्षा — संख्या में</p>
+        </div>
+        <div class="stats-counters" id="stats-counters">
+            <div class="stat-card">
+                <div class="stat-num" id="stat-total">—</div>
+                <div class="stat-label">Total Institutions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" id="stat-schools">—</div>
+                <div class="stat-label">Schools</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" id="stat-colleges">—</div>
+                <div class="stat-label">Colleges</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" id="stat-iti">—</div>
+                <div class="stat-label">ITI Centers</div>
+            </div>
+        </div>
+        <div class="stats-charts">
+            <div class="chart-card">
+                <h3>Institutions by Type</h3>
+                <canvas id="typeChart" height="220"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>Institutions by Area</h3>
+                <canvas id="locationChart" height="220"></canvas>
+            </div>
+        </div>
+    </section>
 
     <div id="ads-section" class="ads-wrapper" style="margin-bottom: 4rem;">
         <div class="ads-header">
@@ -161,6 +222,33 @@
         </div>
     </div>
 
+    <!-- Chatbot Widget -->
+    <div id="chatbot-container" class="chatbot-container">
+        <div id="chatbot-window" class="chatbot-window" style="display:none;">
+            <div class="chatbot-header">
+                <span>🤖 Edu Assistant</span>
+                <button onclick="toggleChatbot()" class="chatbot-close-btn">&times;</button>
+            </div>
+            <div id="chatbot-messages" class="chatbot-messages">
+                <div class="chat-msg bot">नमस्ते! 👋 मैं Dantewada Edu Assistant हूं। आप मुझसे स्कूल, छात्रवृत्ति या कोई
+                    भी शिक्षा से जुड़ी जानकारी पूछ सकते हैं!</div>
+            </div>
+            <div class="chatbot-input-row">
+                <input type="text" id="chatbot-input" placeholder="Type your question..."
+                    onkeydown="if(event.key==='Enter') sendChatMessage()">
+                <button onclick="sendChatMessage()" class="chatbot-send-btn">➤</button>
+            </div>
+            <div class="chatbot-suggestions">
+                <button onclick="askBot('How many schools are in Dantewada?')" class="chat-chip">How many
+                    schools?</button>
+                <button onclick="askBot('Scholarship kaise milegi?')" class="chat-chip">Scholarship info</button>
+                <button onclick="askBot('Admission process kya hai?')" class="chat-chip">Admission process</button>
+            </div>
+        </div>
+        <button class="chatbot-btn" id="chatbot-toggle-btn" onclick="toggleChatbot()"
+            aria-label="Open Chatbot">💬</button>
+    </div>
+
     <footer>
         <div
             style="max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 4rem;">
@@ -169,6 +257,16 @@
                 <p style="margin-top: 1.5rem; opacity: 0.7;" data-i18n="footer_about">Empowering students and parents
                     with transparent
                     information about educational opportunities in the district.</p>
+                <!-- Footer quick links -->
+                <div style="margin-top: 1.5rem; display:flex; flex-wrap:wrap; gap:0.5rem;">
+                    <a href="scholarship.html" style="color:#93c5fd; font-size:0.85rem; text-decoration:none;">🎓
+                        Scholarships</a> ·
+                    <a href="notices.html" style="color:#93c5fd; font-size:0.85rem; text-decoration:none;">📢
+                        Notices</a> ·
+                    <a href="gallery.html" style="color:#93c5fd; font-size:0.85rem; text-decoration:none;">🖼️
+                        Gallery</a> ·
+                    <a href="map.html" style="color:#93c5fd; font-size:0.85rem; text-decoration:none;">🗺️ Map</a>
+                </div>
             </div>
             <div id="contact">
                 <h4 data-i18n="footer_contact">Contact Us</h4>

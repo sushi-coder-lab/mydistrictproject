@@ -1,4 +1,6 @@
-const API_URL = 'https://mydistrictproject-5.onrender.com/api';
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'
+    ? 'http://localhost:5000/api'
+    : 'https://mydistrictproject-5.onrender.com/api';
 
 // State
 let currentLanguage = 'en';
@@ -13,6 +15,8 @@ let currentFilters = {
 let allInstitutions = [];
 let visibleCount = 6;
 const PAGE_SIZE = 6;
+let visibleUpdatesCount = 3;
+let allUpdates = [];
 
 const translations = {
     en: {
@@ -244,10 +248,7 @@ function updateAuthUI() {
 
 // Initial Load
 document.addEventListener('DOMContentLoaded', () => {
-    setLanguage(currentLanguage); // Initialize language based on currentLanguage state
-    fetchInstitutions();
-    fetchUpdates();
-    fetchAds();
+    setLanguage(currentLanguage); // Initialize language based on currentLanguage state (this also calls fetchInstitutions, fetchUpdates, fetchAds)
     initSlider();
     initMobileMenu();
     updateAuthUI(); // Call this on initial load
@@ -298,7 +299,25 @@ async function fetchUpdates() {
     try {
         const response = await fetch(`${API_URL}/updates`);
         const data = await response.json();
-        renderUpdates(data);
+
+        // De-duplicate updates based on title (Hindi or English)
+        const uniqueUpdates = [];
+        const seenTitles = new Set();
+
+        // Sort by date descending first (assuming server might not always)
+        data.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        for (const update of data) {
+            const originalTitle = currentLanguage === 'en' ? update.title_en : update.title;
+            const title = String(originalTitle).trim().toLowerCase();
+            if (!seenTitles.has(title)) {
+                seenTitles.add(title);
+                uniqueUpdates.push(update);
+            }
+        }
+
+        allUpdates = uniqueUpdates;
+        renderUpdates();
     } catch (error) {
         console.error('Error fetching updates:', error);
     }
@@ -319,7 +338,8 @@ async function fetchAds() {
 function renderAds(ads) {
     if (!adsContainer) return;
     if (ads.length === 0) {
-        adsContainer.style.display = 'none';
+        adsContainer.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 2rem; font-size: 1.1rem;">No new opportunities right now. Check back later!</div>`;
+        adsContainer.style.display = 'block';
         return;
     }
     adsContainer.style.display = 'grid';
@@ -437,9 +457,14 @@ function loadMore() {
     if (btn) btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-function renderUpdates(updates) {
+function renderUpdates() {
     if (!updatesContainer) return;
-    updatesContainer.innerHTML = updates.map(update => {
+
+    // Split updates into new (first 2) and old (rest)
+    const newUpdates = allUpdates.slice(0, 2);
+    const oldUpdates = allUpdates.slice(2);
+
+    const renderCard = (update) => {
         const title = currentLanguage === 'en' ? update.title_en : update.title;
         const content = currentLanguage === 'en' ? update.content_en : update.content;
 
@@ -449,22 +474,90 @@ function renderUpdates(updates) {
         if (title.toUpperCase().includes('MEDICAL') || title.includes('मेडिकल')) label = 'MEDICAL NEWS';
 
         return `
-            <div class="card" style="padding: 1.5rem; border-left: 4px solid var(--primary);">
+            <div class="card" style="padding: 1.5rem; border-left: 4px solid var(--primary); transition: transform 0.3s ease;">
                 <div class="card-tag" style="background: #eff6ff;">${label}</div>
                 <h3 style="margin: 0.5rem 0; font-size: 1.25rem;">${title}</h3>
                 <p style="font-size: 0.95rem; color: var(--text-dark); opacity: 0.8;">${content}</p>
                 <div style="font-size: 0.8rem; margin-top: 1rem; color: var(--primary); font-weight: 600;">
-                    ${new Date(update.date).toLocaleDateString()}
+                    📅 ${new Date(update.date).toLocaleDateString()}
                 </div>
             </div>
         `;
-    }).join('');
+    };
+
+    let html = '';
+
+    // Render NEW updates
+    if (newUpdates.length > 0) {
+        html += newUpdates.map(renderCard).join('');
+    } else {
+        html += `<div style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 2rem;">No updates available.</div>`;
+    }
+
+    // Render OLD updates in accordion
+    if (oldUpdates.length > 0) {
+        const oldNewsTitle = currentLanguage === 'en' ? 'Old News & Updates' : 'पुराने समाचार और अपडेट';
+        html += `
+            <div class="old-news-container" id="old-news-container">
+                <div class="old-news-header" onclick="toggleOldNews()">
+                    <span><i class="fas fa-history" style="margin-right:0.5rem; color: #64748b;"></i> ${oldNewsTitle}</span>
+                    <span class="old-news-icon" id="old-news-icon">▼</span>
+                </div>
+                <div class="old-news-content" id="old-news-content">
+                    <div class="old-news-grid">
+                        ${oldUpdates.map(renderCard).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    updatesContainer.innerHTML = html;
+
+    // Remove obsolete load more button if it exists
+    const oldBtn = document.getElementById('load-more-updates-wrapper');
+    if (oldBtn) oldBtn.remove();
+}
+
+// Global function to toggle Old News
+window.toggleOldNews = function () {
+    const header = document.querySelector('.old-news-header');
+    const content = document.getElementById('old-news-content');
+
+    if (header && content) {
+        header.classList.toggle('open');
+        content.classList.toggle('open');
+    }
 }
 
 async function showDetails(id) {
     try {
         const response = await fetch(`${API_URL}/institutions/${id}`);
         const inst = await response.json();
+
+        // Fetch gallery images
+        let galleryHtml = '';
+        try {
+            const galleryRes = await fetch(`${API_URL}/institutions/${id}/images`);
+            const images = await galleryRes.json();
+            if (images && images.length > 0) {
+                galleryHtml = `
+                    <div class="gallery-container" style="margin-top: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">🖼️ Gallery</h3>
+                        <div class="gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;">
+                            ${images.map(img => `
+                                <div class="gallery-item" style="cursor: pointer;" onclick="window.open('${img.image_url}', '_blank')">
+                                    <img src="${img.image_url}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        } catch (gErr) {
+            console.error('Error fetching gallery:', gErr);
+        }
+
         const t = translations[currentLanguage];
 
         const name = currentLanguage === 'en' ? inst.name_en : inst.name;
@@ -477,7 +570,7 @@ async function showDetails(id) {
         const admission = currentLanguage === 'en' ? inst.admission_process_en : inst.admission_process;
 
         modalBody.innerHTML = `
-            <div style="background-image: url('${inst.image_url}'); height: 300px; background-size: cover; background-position: center; border-radius: 1rem; margin-bottom: 2rem;"></div>
+            <div style="background-image: url('${inst.image_url || 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=800'}'); height: 300px; background-size: cover; background-position: center; border-radius: 1rem; margin-bottom: 2rem;"></div>
             <span class="card-tag">${type}</span>
             <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">${name}</h1>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
@@ -488,19 +581,22 @@ async function showDetails(id) {
                     <p>${streams}</p>
                     <h3 style="margin-top: 1rem;">📚 ${t.subjects_label}</h3>
                     <ul class="subjects-list">
-                        ${subjects.split(/[।,]\s+/).filter(s => s.trim()).map(s => `<li>${s.trim()}</li>`).join('')}
+                        ${subjects ? subjects.split(/[।,]\s+/).filter(s => s.trim()).map(s => `<li>${s.trim()}</li>`).join('') : 'Various Subjects'}
                     </ul>
                 </div>
                 <div>
                     <h3>🏢 ${t.facilities_label}</h3>
-                    <p>${facilities}</p>
+                    <p>${facilities || 'N/A'}</p>
                     <h3 style="margin-top: 1rem;">📞 ${t.contact_label}</h3>
-                    <p>${contact}</p>
+                    <p>${contact || 'N/A'}</p>
                 </div>
             </div>
             <h3>📝 ${t.admission_label}</h3>
-            <p style="margin-bottom: 2rem;">${admission}</p>
-            <a href="${inst.map_location}" target="_blank" class="filter-btn active" style="text-decoration: none; display: inline-block;">${t.view_on_map}</a>
+            <p style="margin-bottom: 2rem;">${admission || 'N/A'}</p>
+            ${galleryHtml}
+            <div style="margin-top: 2rem;">
+                <a href="${inst.map_location || '#'}" target="_blank" class="filter-btn active" style="text-decoration: none; display: inline-block;">${t.view_on_map}</a>
+            </div>
         `;
         if (modal) modal.style.display = 'flex';
     } catch (error) {
@@ -576,3 +672,279 @@ if (clearFiltersBtn) {
         fetchInstitutions();
     });
 }
+
+// ============================================
+// DARK MODE
+// ============================================
+function initDarkMode() {
+    const toggle = document.getElementById('theme-toggle');
+    if (!toggle) return;
+
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    toggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+
+    toggle.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        toggle.textContent = next === 'dark' ? '☀️' : '🌙';
+        toggle.title = next === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+    });
+}
+
+// ============================================
+// VOICE SEARCH
+// ============================================
+function initVoiceSearch() {
+    const voiceBtn = document.getElementById('voice-search-btn');
+    if (!voiceBtn) return;
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        voiceBtn.style.display = 'none';
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'hi-IN';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    let isListening = false;
+
+    voiceBtn.addEventListener('click', () => {
+        if (isListening) { recognition.stop(); return; }
+        recognition.start();
+        isListening = true;
+        voiceBtn.classList.add('listening');
+        voiceBtn.title = 'Listening... (speak now)';
+    });
+
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        if (searchInput) {
+            searchInput.value = transcript;
+            currentFilters.search = transcript;
+            fetchInstitutions();
+        }
+    };
+
+    recognition.onend = () => {
+        isListening = false;
+        voiceBtn.classList.remove('listening');
+        voiceBtn.title = 'Voice Search';
+    };
+
+    recognition.onerror = () => {
+        isListening = false;
+        voiceBtn.classList.remove('listening');
+    };
+}
+
+// ============================================
+// STATISTICS CHARTS
+// ============================================
+const API_URL_STATS = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'
+    ? 'http://localhost:5000/api'
+    : 'https://mydistrictproject-5.onrender.com/api';
+
+async function loadStats() {
+    try {
+        const res = await fetch(`${API_URL_STATS}/stats`);
+        const data = await res.json();
+
+        // Update counters
+        const el = id => document.getElementById(id);
+        if (el('stat-total')) animateCounter(el('stat-total'), data.total);
+        if (el('stat-schools')) animateCounter(el('stat-schools'), data.schools);
+        if (el('stat-colleges')) animateCounter(el('stat-colleges'), data.colleges);
+        if (el('stat-iti')) animateCounter(el('stat-iti'), data.iti);
+
+        // Doughnut Chart — by type
+        const typeCtx = document.getElementById('typeChart');
+        if (typeCtx) {
+            new Chart(typeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Schools', 'Colleges', 'ITI'],
+                    datasets: [{
+                        data: [data.schools, data.colleges, data.iti],
+                        backgroundColor: ['#2563eb', '#7c3aed', '#0f766e'],
+                        borderWidth: 0,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 12 }, boxWidth: 12 } }
+                    },
+                    cutout: '65%'
+                }
+            });
+        }
+
+        // Bar Chart — by location
+        const locationCtx = document.getElementById('locationChart');
+        if (locationCtx && data.byLocation) {
+            new Chart(locationCtx, {
+                type: 'bar',
+                data: {
+                    labels: data.byLocation.map(l => l.location || 'Other'),
+                    datasets: [{
+                        label: 'Institutions',
+                        data: data.byLocation.map(l => l.count),
+                        backgroundColor: 'rgba(37,99,235,0.15)',
+                        borderColor: '#2563eb',
+                        borderWidth: 2,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+    } catch (e) {
+        console.error('Stats load error:', e);
+    }
+}
+
+function animateCounter(el, target) {
+    const duration = 1200;
+    const start = performance.now();
+    const update = (t) => {
+        const elapsed = t - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        el.textContent = Math.round(eased * target);
+        if (progress < 1) requestAnimationFrame(update);
+    };
+    requestAnimationFrame(update);
+}
+
+// ============================================
+// CHATBOT
+// ============================================
+const chatKnowledge = [
+    { q: ['school', 'schools', 'स्कूल', 'kitne school'], a: 'Dantewada district में 100+ schools हैं। आप Institutions section से filter करके देख सकते हैं। 🏫' },
+    { q: ['college', 'colleges', 'कॉलेज', 'university'], a: 'District में Government और Private colleges हैं जैसे Shaskiya Danteshwari PG College। 🎓' },
+    { q: ['iti', 'vocational', 'technical', 'आईटीआई'], a: 'District में कई ITI centers हैं जो electrician, welder, plumber जैसे trade courses offer करते हैं। ⚙️' },
+    { q: ['scholarship', 'छात्रवृत्ति', 'scholarship kaise', 'financial aid', 'money', 'help'], a: 'Scholarships के लिए हमारा 🎓 Scholarship page देखें! CM Gyan Protsahan, SC/ST scholarship, और National Merit scholarship उपलब्ध हैं। deadline जरूर चेक करें।' },
+    { q: ['admission', 'apply', 'प्रवेश', 'enrollment', 'form'], a: 'Admission process के लिए संबंधित Institution की profile खोलें। अधिकतर Government colleges में merit-based admission होती है। 📝' },
+    { q: ['result', 'results', 'परिणाम', 'exam result', 'board result'], a: 'Exam results के लिए हमारा 📢 Notices & Results page देखें। CGBSE results cgbse.nic.in पर भी available हैं।' },
+    { q: ['map', 'location', 'address', 'कहाँ', 'where', 'find', 'locate'], a: 'सभी schools/colleges की location 🗺️ Map page पर देख सकते हैं। Institution card पर click करके भी Google Maps link मिलेगा।' },
+    { q: ['teacher', 'teachers', 'faculty', 'staff', 'professor', 'शिक्षक'], a: 'Teachers की जानकारी के लिए 👨‍🏫 Teacher Directory page visit करें। Subject और school के आधार पर search कर सकते हैं।' },
+    { q: ['gallery', 'photos', 'images', 'events', 'photo', 'फोटो'], a: 'School events और गतिविधियों की photos 🖼️ Gallery page पर उपलब्ध हैं।' },
+    { q: ['feedback', 'complaint', 'suggestion', 'शिकायत', 'समस्या', 'problem', 'issue'], a: 'अपनी शिकायत या feedback 📝 Feedback page के through दर्ज कर सकते हैं। हम जल्द reply करेंगे।' },
+    { q: ['dark mode', 'dark', 'night mode', 'night', 'अंधेरा', 'आंखें', 'raat'], a: 'Dark mode के लिए header में 🌙 button click करें। आपकी preference save हो जाएगी!' },
+    { q: ['contact', 'phone', 'email', 'संपर्क', 'helpline'], a: 'संपर्क के लिए: Email: info@dantewadaedu.in | Phone: +91 7856 25XXXX | या Feedback form use करें।' },
+    { q: ['navgurukul', 'software', 'coding', 'programming'], a: 'NavGurukul Admission 2026 के लिए admissions.navgurukul.org पर apply करें। Free residential software engineering course! 💻' },
+    { q: ['emrs', 'eklavya', 'एकलव्य', 'tribal school', 'आदिवासी'], a: 'एकलव्य आदर्श आवासीय विद्यालय - Class 6 admission के लिए cg.nic.in देखें। Admit cards जारी हो गए हैं।' },
+    { q: ['hello', 'hi', 'hey', 'नमस्ते', 'namaskar', 'namaste', 'helo'], a: 'नमस्ते! 😊 मैं Dantewada Edu Assistant हूं। Schools, Scholarships, Notices, या किसी भी चीज़ के बारे में पूछें!' },
+    { q: ['help', 'सहायता', 'what can you do', 'kya kar sakte ho'], a: 'मैं इन topics पर मदद कर सकता हूं:\n• 🏫 Schools/Colleges info\n• 🎓 Scholarship guidance\n• 📢 Results & Notices\n• 🗺️ Location & Map\n• 👨‍🏫 Teacher directory\n• 📝 Feedback submission' },
+];
+
+function toggleChatbot() {
+    const win = document.getElementById('chatbot-window');
+    const btn = document.getElementById('chatbot-toggle-btn');
+    if (!win) return;
+    const isVisible = win.style.display !== 'none';
+    win.style.display = isVisible ? 'none' : 'flex';
+    btn.textContent = isVisible ? '💬' : '✖';
+}
+
+function addChatMessage(text, sender) {
+    const msgs = document.getElementById('chatbot-messages');
+    if (!msgs) return;
+    const div = document.createElement('div');
+    div.className = `chat-msg ${sender}`;
+    div.textContent = text;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+}
+
+function getBotResponse(input) {
+    const q = input.toLowerCase();
+    for (const entry of chatKnowledge) {
+        if (entry.q.some(keyword => q.includes(keyword))) {
+            return entry.a;
+        }
+    }
+    return `"${input}" के बारे में मुझे अभी जानकारी नहीं है। आप 📝 Feedback page पर अपना सवाल लिख सकते हैं, या सीधे search box में खोजें। 😊`;
+}
+
+window.sendChatMessage = function () {
+    const input = document.getElementById('chatbot-input');
+    if (!input) return;
+    const text = input.value.trim();
+    if (!text) return;
+    addChatMessage(text, 'user');
+    input.value = '';
+    setTimeout(() => {
+        const reply = getBotResponse(text);
+        addChatMessage(reply, 'bot');
+    }, 400);
+};
+
+window.askBot = function (question) {
+    const input = document.getElementById('chatbot-input');
+    if (input) { input.value = question; sendChatMessage(); }
+};
+
+window.toggleChatbot = toggleChatbot;
+
+// ============================================
+// PAGE VIEW TRACKING
+// ============================================
+function trackPageView() {
+    try {
+        fetch(`${API_URL_STATS}/pageview`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ page: window.location.pathname })
+        }).catch(() => { });
+    } catch (e) { }
+}
+
+// ============================================
+// PWA SERVICE WORKER REGISTRATION
+// ============================================
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js').then(reg => {
+                console.log('Service Worker registered:', reg.scope);
+            }).catch(err => {
+                console.warn('SW registration failed:', err);
+            });
+        });
+    }
+}
+
+// ============================================
+// INIT NEW FEATURES ON DOM READY
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+    // init dark mode first to prevent flash
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+});
+
+// Additional init (runs after main DOMContentLoaded)
+window.addEventListener('load', () => {
+    initDarkMode();
+    initVoiceSearch();
+    loadStats();
+    trackPageView();
+    registerServiceWorker();
+});
+

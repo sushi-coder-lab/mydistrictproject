@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Directory | Dantewada Education Portal</title>
+    <meta name="description" content="Find teachers and faculty in Dantewada district schools and colleges.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .page-hero {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .page-hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-hero p {
+            font-size: 1.1rem;
+            opacity: 0.85;
+        }
+
+        .page-content {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 0.75rem 1.25rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-bar input:focus {
+            border-color: #7c3aed;
+        }
+
+        .teacher-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .teacher-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.75rem;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .teacher-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 30px rgba(124, 58, 237, 0.12);
+            border-color: #c4b5fd;
+        }
+
+        .teacher-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            overflow: hidden;
+        }
+
+        .teacher-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .teacher-card h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.25rem;
+        }
+
+        .teacher-subject {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: #f3e8ff;
+            color: #7c3aed;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .teacher-info {
+            font-size: 0.85rem;
+            color: #64748b;
+            line-height: 1.8;
+        }
+
+        .teacher-info span {
+            display: block;
+        }
+
+        .loading-msg {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="glass-header">
+        <div class="header-container">
+            <div class="logo-container" onclick="window.location.href='index.html'">
+                <div class="logo-img">📚</div>
+                <div class="logo-text">
+                    <div class="logo-title">Dantewada<span>Edu</span></div>
+                    <div class="logo-subtitle">District Education Directory</div>
+                </div>
+            </div>
+            <nav class="main-nav">
+                <ul class="nav-links">
+                    <li><a href="index.html">🏠 Home</a></li>
+                    <li><a href="scholarship.html">🎓 Scholarships</a></li>
+                    <li><a href="notices.html">📢 Notices</a></li>
+                    <li><a href="teachers.html" style="color:#7c3aed">👨‍🏫 Teachers</a></li>
+                    <li><a href="gallery.html">🖼️ Gallery</a></li>
+                    <li><a href="map.html">🗺️ Map</a></li>
+                    <li><a href="feedback.html">📝 Feedback</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button class="mobile-toggle" aria-label="Toggle Menu"><span class="bar"></span><span
+                        class="bar"></span></button>
+            </div>
+        </div>
+    </header>
+
+    <div class="page-hero">
+        <h1>👨‍🏫 Teacher Directory</h1>
+        <p>Dantewada के शिक्षकों से मिलें — शिक्षा की नींव</p>
+    </div>
+
+    <div class="page-content">
+        <div class="search-bar">
+            <input type="text" id="teacher-search" placeholder="Search by name or subject..."
+                oninput="filterTeachers()">
+        </div>
+        <div id="teacher-grid" class="teacher-grid">
+            <div class="loading-msg">Loading teachers...</div>
+        </div>
+    </div>
+
+    <footer style="background:#1e293b; color:white; text-align:center; padding:2rem; margin-top:4rem; opacity:0.9;">
+        <p>© 2026 Dantewada Education Portal | <a href="index.html" style="color:#93c5fd;">Back to Home</a></p>
+    </footer>
+
+    <script>
+        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'
+            ? 'http://localhost:5000/api' : 'https://mydistrictproject-5.onrender.com/api';
+
+        let allTeachers = [];
+
+        async function loadTeachers() {
+            const grid = document.getElementById('teacher-grid');
+            try {
+                const res = await fetch(`${API_URL}/teachers`);
+                allTeachers = await res.json();
+                renderTeachers(allTeachers);
+            } catch (e) {
+                grid.innerHTML = '<div class="loading-msg">Error loading teachers.</div>';
+            }
+        }
+
+        function renderTeachers(data) {
+            const grid = document.getElementById('teacher-grid');
+            if (!data.length) { grid.innerHTML = '<div class="loading-msg">No teachers found.</div>'; return; }
+            grid.innerHTML = data.map(t => `
+                <div class="teacher-card">
+                    <div class="teacher-avatar">
+                        ${t.image_url ? `<img src="${t.image_url}" alt="${t.name_en || t.name}">` : '👩‍🏫'}
+                    </div>
+                    <h3>${t.name}</h3>
+                    ${t.name_en ? `<p style="font-size:0.85rem;color:#64748b;margin-bottom:0.5rem;">${t.name_en}</p>` : ''}
+                    <div class="teacher-subject">${t.subject || 'N/A'}</div>
+                    <div class="teacher-info">
+                        <span>🏫 ${t.institution_name || 'N/A'}</span>
+                        <span>🎓 ${t.qualification || 'N/A'}</span>
+                        <span>⏱️ ${t.experience_years || 0} years experience</span>
+                        ${t.contact ? `<span>📞 ${t.contact}</span>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterTeachers() {
+            const q = document.getElementById('teacher-search').value.toLowerCase();
+            const filtered = allTeachers.filter(t =>
+                (t.name || '').toLowerCase().includes(q) ||
+                (t.name_en || '').toLowerCase().includes(q) ||
+                (t.subject || '').toLowerCase().includes(q) ||
+                (t.institution_name || '').toLowerCase().includes(q)
+            );
+            renderTeachers(filtered);
+        }
+
+        const toggle = document.querySelector('.mobile-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        if (toggle) toggle.addEventListener('click', () => { navLinks.classList.toggle('active'); toggle.classList.toggle('active'); });
+
+        loadTeachers();
+    </script>
+</body>
+
+</html>

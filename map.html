@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map View | Dantewada Education Portal</title>
+    <meta name="description" content="Find schools and colleges on map in Dantewada district.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .page-hero {
+            background: linear-gradient(135deg, #065f46, #10b981);
+            color: white;
+            padding: 2.5rem 2rem;
+            text-align: center;
+        }
+
+        .page-hero h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-hero p {
+            font-size: 1rem;
+            opacity: 0.85;
+        }
+
+        #map-container {
+            position: relative;
+        }
+
+        #map {
+            height: calc(100vh - 260px);
+            min-height: 500px;
+            width: 100%;
+        }
+
+        .map-controls {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .map-filter-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .map-filter-btn.all {
+            background: #1e293b;
+            color: white;
+        }
+
+        .map-filter-btn.school {
+            background: #2563eb;
+            color: white;
+        }
+
+        .map-filter-btn.college {
+            background: #7c3aed;
+            color: white;
+        }
+
+        .map-filter-btn.iti {
+            background: #0f766e;
+            color: white;
+        }
+
+        .map-legend {
+            position: absolute;
+            bottom: 2rem;
+            left: 1rem;
+            z-index: 1000;
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            font-size: 0.8rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .info-strip {
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.75rem 2rem;
+            font-size: 0.9rem;
+            color: #64748b;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="glass-header">
+        <div class="header-container">
+            <div class="logo-container" onclick="window.location.href='index.html'">
+                <div class="logo-img">📚</div>
+                <div class="logo-text">
+                    <div class="logo-title">Dantewada<span>Edu</span></div>
+                    <div class="logo-subtitle">District Education Directory</div>
+                </div>
+            </div>
+            <nav class="main-nav">
+                <ul class="nav-links">
+                    <li><a href="index.html">🏠 Home</a></li>
+                    <li><a href="scholarship.html">🎓 Scholarships</a></li>
+                    <li><a href="notices.html">📢 Notices</a></li>
+                    <li><a href="teachers.html">👨‍🏫 Teachers</a></li>
+                    <li><a href="gallery.html">🖼️ Gallery</a></li>
+                    <li><a href="map.html" style="color:#065f46">🗺️ Map</a></li>
+                    <li><a href="feedback.html">📝 Feedback</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button class="mobile-toggle" aria-label="Toggle Menu"><span class="bar"></span><span
+                        class="bar"></span></button>
+            </div>
+        </div>
+    </header>
+
+    <div class="page-hero">
+        <h1>🗺️ Institution Map</h1>
+        <p>Dantewada district के सभी Schools, Colleges और ITI को map पर देखें</p>
+    </div>
+    <div class="info-strip" id="map-info">Loading institutions on map...</div>
+
+    <div id="map-container">
+        <div id="map"></div>
+        <div class="map-controls">
+            <button class="map-filter-btn all" onclick="filterMarkers('')">All</button>
+            <button class="map-filter-btn school" onclick="filterMarkers('School')">Schools</button>
+            <button class="map-filter-btn college" onclick="filterMarkers('College')">Colleges</button>
+            <button class="map-filter-btn iti" onclick="filterMarkers('ITI')">ITI</button>
+        </div>
+        <div class="map-legend">
+            <div class="legend-item">
+                <div class="legend-dot" style="background:#2563eb"></div> School
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background:#7c3aed"></div> College
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background:#0f766e"></div> ITI
+            </div>
+        </div>
+    </div>
+
+    <footer style="background:#1e293b; color:white; text-align:center; padding:2rem; opacity:0.9;">
+        <p>© 2026 Dantewada Education Portal | Map data © OpenStreetMap contributors | <a href="index.html"
+                style="color:#93c5fd;">Back to Home</a></p>
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'
+            ? 'http://localhost:5000/api' : 'https://mydistrictproject-5.onrender.com/api';
+
+        // Dantewada district center
+        const DANTEWADA_CENTER = [18.8922, 81.3488];
+
+        const map = L.map('map', { zoomControl: true }).setView(DANTEWADA_CENTER, 10);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 18
+        }).addTo(map);
+
+        let allMarkers = [];
+        let allInstitutions = [];
+
+        function getMarkerColor(type) {
+            if (type === 'School') return '#2563eb';
+            if (type === 'College') return '#7c3aed';
+            if (type === 'ITI') return '#0f766e';
+            return '#64748b';
+        }
+
+        function createColorMarker(color) {
+            return L.divIcon({
+                className: '',
+                html: `<div style="width:18px;height:18px;border-radius:50%;background:${color};border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>`,
+                iconSize: [18, 18],
+                iconAnchor: [9, 9]
+            });
+        }
+
+        // Approx lat/lng for Dantewada block areas
+        const blockCoords = {
+            'Dantewada': [18.8922, 81.3488],
+            'Geedam': [18.7500, 81.4500],
+            'Katekalyan': [18.6000, 81.5500],
+            'Kuakonda': [18.7000, 81.2500],
+            'Kirandul': [18.6500, 81.2000],
+            'Bacheli': [18.7200, 81.2200],
+            'Barsoor': [18.9500, 81.6000]
+        };
+
+        function getApproxCoords(institution) {
+            if (institution.latitude && institution.longitude) {
+                return [institution.latitude, institution.longitude];
+            }
+            const location_en = institution.location_en || '';
+            for (const [block, coords] of Object.entries(blockCoords)) {
+                if (location_en.toLowerCase().includes(block.toLowerCase())) {
+                    // Add small random offset so markers don't stack
+                    const lat = coords[0] + (Math.random() - 0.5) * 0.05;
+                    const lng = coords[1] + (Math.random() - 0.5) * 0.05;
+                    return [lat, lng];
+                }
+            }
+            return [DANTEWADA_CENTER[0] + (Math.random() - 0.5) * 0.1, DANTEWADA_CENTER[1] + (Math.random() - 0.5) * 0.1];
+        }
+
+        async function loadMap() {
+            try {
+                const res = await fetch(`${API_URL}/institutions`);
+                allInstitutions = await res.json();
+
+                allMarkers = allInstitutions.map(inst => {
+                    const coords = getApproxCoords(inst);
+                    const color = getMarkerColor(inst.type);
+                    const marker = L.marker(coords, { icon: createColorMarker(color) });
+                    marker.instType = inst.type;
+
+                    const mapLink = inst.map_location ?
+                        `<a href="${inst.map_location}" target="_blank" style="color:#2563eb;font-weight:600;">View on Google Maps</a>` : '';
+
+                    marker.bindPopup(`
+                        <div style="font-family:'Inter',sans-serif; min-width:200px;">
+                            <div style="font-size:0.75rem;font-weight:700;padding:0.2rem 0.5rem;background:${color};color:white;border-radius:4px;display:inline-block;margin-bottom:0.5rem;">${inst.type_en || inst.type}</div>
+                            <div style="font-size:1rem;font-weight:700;color:#0f172a;margin-bottom:0.25rem;">${inst.name_en || inst.name}</div>
+                            <div style="font-size:0.85rem;color:#64748b;margin-bottom:0.5rem;">📍 ${inst.location_en || inst.location}</div>
+                            <div style="font-size:0.8rem;color:#475569;">📖 ${inst.streams_en || inst.streams || 'N/A'}</div>
+                            ${mapLink ? `<div style="margin-top:0.75rem;">${mapLink}</div>` : ''}
+                        </div>
+                    `, { maxWidth: 280 });
+
+                    marker.addTo(map);
+                    return marker;
+                });
+
+                document.getElementById('map-info').textContent = `Showing ${allInstitutions.length} institutions on map. Click a pin to see details.`;
+            } catch (e) {
+                document.getElementById('map-info').textContent = 'Error loading institutions. Please check backend.';
+            }
+        }
+
+        function filterMarkers(type) {
+            allMarkers.forEach(m => {
+                if (!type || m.instType === type) {
+                    m.addTo(map);
+                } else {
+                    m.remove();
+                }
+            });
+            const count = type ? allMarkers.filter(m => m.instType === type).length : allMarkers.length;
+            document.getElementById('map-info').textContent = `Showing ${count} ${type || 'all'} institution(s).`;
+        }
+
+        const toggle = document.querySelector('.mobile-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        if (toggle) toggle.addEventListener('click', () => { navLinks.classList.toggle('active'); toggle.classList.toggle('active'); });
+
+        loadMap();
+    </script>
+</body>
+
+</html>

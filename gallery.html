@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Gallery | Dantewada Education Portal</title>
+    <meta name="description" content="Photo gallery of school events and activities in Dantewada district.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .page-hero {
+            background: linear-gradient(135deg, #be185d, #ec4899);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .page-hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-hero p {
+            font-size: 1.1rem;
+            opacity: 0.85;
+        }
+
+        .page-content {
+            max-width: 1300px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            aspect-ratio: 4/3;
+            background: #f1f5f9;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0 16px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.08);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
+            padding: 1.25rem;
+            color: white;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            transform: translateY(0);
+        }
+
+        .gallery-overlay h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .gallery-overlay p {
+            font-size: 0.78rem;
+            opacity: 0.85;
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 80vh;
+            border-radius: 12px;
+            object-fit: contain;
+        }
+
+        .lightbox-caption {
+            color: white;
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 1rem;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            color: white;
+            cursor: pointer;
+            background: none;
+            border: none;
+            line-height: 1;
+        }
+
+        .lightbox-prev,
+        .lightbox-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .lightbox-prev:hover,
+        .lightbox-next:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .lightbox-prev {
+            left: 1rem;
+        }
+
+        .lightbox-next {
+            right: 1rem;
+        }
+
+        .loading-msg {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="glass-header">
+        <div class="header-container">
+            <div class="logo-container" onclick="window.location.href='index.html'">
+                <div class="logo-img">📚</div>
+                <div class="logo-text">
+                    <div class="logo-title">Dantewada<span>Edu</span></div>
+                    <div class="logo-subtitle">District Education Directory</div>
+                </div>
+            </div>
+            <nav class="main-nav">
+                <ul class="nav-links">
+                    <li><a href="index.html">🏠 Home</a></li>
+                    <li><a href="scholarship.html">🎓 Scholarships</a></li>
+                    <li><a href="notices.html">📢 Notices</a></li>
+                    <li><a href="teachers.html">👨‍🏫 Teachers</a></li>
+                    <li><a href="gallery.html" style="color:#be185d">🖼️ Gallery</a></li>
+                    <li><a href="map.html">🗺️ Map</a></li>
+                    <li><a href="feedback.html">📝 Feedback</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button class="mobile-toggle" aria-label="Toggle Menu"><span class="bar"></span><span
+                        class="bar"></span></button>
+            </div>
+        </div>
+    </header>
+
+    <div class="page-hero">
+        <h1>🖼️ Photo Gallery</h1>
+        <p>School Events, Functions & Moments from Dantewada's Education Community</p>
+    </div>
+
+    <div class="page-content">
+        <div id="gallery-grid" class="gallery-grid">
+            <div class="loading-msg">Loading gallery...</div>
+        </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <button class="lightbox-prev" onclick="changeLightbox(-1)">&#8249;</button>
+        <img id="lightbox-img" src="" alt="Gallery">
+        <div class="lightbox-caption" id="lightbox-caption"></div>
+        <button class="lightbox-next" onclick="changeLightbox(1)">&#8250;</button>
+    </div>
+
+    <footer style="background:#1e293b; color:white; text-align:center; padding:2rem; margin-top:4rem; opacity:0.9;">
+        <p>© 2026 Dantewada Education Portal | <a href="index.html" style="color:#93c5fd;">Back to Home</a></p>
+    </footer>
+
+    <script>
+        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'
+            ? 'http://localhost:5000/api' : 'https://mydistrictproject-5.onrender.com/api';
+
+        let galleryData = [];
+        let currentLightboxIndex = 0;
+
+        async function loadGallery() {
+            const grid = document.getElementById('gallery-grid');
+            try {
+                const res = await fetch(`${API_URL}/gallery`);
+                galleryData = await res.json();
+                if (!galleryData.length) { grid.innerHTML = '<div class="loading-msg">No photos available.</div>'; return; }
+                grid.innerHTML = galleryData.map((item, idx) => `
+                    <div class="gallery-item" onclick="openLightbox(${idx})">
+                        <img src="${item.image_url}" alt="${item.title}" loading="lazy">
+                        <div class="gallery-overlay">
+                            <h3>${item.title}</h3>
+                            <p>${item.institution_name || ''} ${item.event_date ? '• ' + new Date(item.event_date).toLocaleDateString('en-IN') : ''}</p>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                grid.innerHTML = '<div class="loading-msg">Error loading gallery.</div>';
+            }
+        }
+
+        function openLightbox(idx) {
+            currentLightboxIndex = idx;
+            updateLightbox();
+            document.getElementById('lightbox').classList.add('active');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+        }
+
+        function changeLightbox(dir) {
+            currentLightboxIndex = (currentLightboxIndex + dir + galleryData.length) % galleryData.length;
+            updateLightbox();
+        }
+
+        function updateLightbox() {
+            const item = galleryData[currentLightboxIndex];
+            document.getElementById('lightbox-img').src = item.image_url;
+            document.getElementById('lightbox-caption').textContent = `${item.title} — ${item.institution_name || ''}`;
+        }
+
+        document.getElementById('lightbox').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('lightbox')) closeLightbox();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') changeLightbox(-1);
+            if (e.key === 'ArrowRight') changeLightbox(1);
+        });
+
+        const toggle = document.querySelector('.mobile-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        if (toggle) toggle.addEventListener('click', () => { navLinks.classList.toggle('active'); toggle.classList.toggle('active'); });
+
+        loadGallery();
+    </script>
+</body>
+
+</html>

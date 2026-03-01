@@ -1,0 +1,46 @@
+{
+    "name": "Dantewada Education Portal",
+    "short_name": "DantewadaEdu",
+    "description": "District Education Directory for Dantewada, Chhattisgarh",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#f1f5f9",
+    "theme_color": "#2563eb",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "https://via.placeholder.com/192x192/2563eb/ffffff?text=DE",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "https://via.placeholder.com/512x512/2563eb/ffffff?text=DE",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": [
+        "education",
+        "government"
+    ],
+    "lang": "en-IN",
+    "shortcuts": [
+        {
+            "name": "Scholarships",
+            "url": "./scholarship.html",
+            "description": "View available scholarships"
+        },
+        {
+            "name": "Notices",
+            "url": "./notices.html",
+            "description": "Latest notices and results"
+        },
+        {
+            "name": "Map",
+            "url": "./map.html",
+            "description": "Institutions on map"
+        }
+    ]
+}
