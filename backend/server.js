@@ -21,20 +21,30 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 let db;
+let dbInitialized = false;
 
-// Initialize Database
-initDb().then(database => {
-    db = database;
-    app.listen(PORT, '0.0.0.0', () => {
-        console.log(`Server running on port ${PORT}`);
+// Health check (before DB init)
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: 'ok',
+        db: dbInitialized ? 'initialized' : 'initializing',
+        version: '1.0.2',
+        timestamp: new Date().toISOString()
     });
-}).catch(err => {
-    console.error('CRITICAL: Failed to initialize database and start server:', err);
-    process.exit(1);
 });
 
-app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', version: '1.0.1', timestamp: new Date().toISOString() });
+// Initialize Database in background
+initDb().then(database => {
+    db = database;
+    dbInitialized = true;
+    console.log('Database initialized successfully.');
+}).catch(err => {
+    console.error('CRITICAL: Failed to initialize database:', err);
+});
+
+// Start listening immediately
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
 });
 
 // Helper: Log admin action
@@ -45,6 +55,13 @@ async function logAudit(username, action, details) {
 }
 
 // API Routes
+app.use((req, res, next) => {
+    if (!dbInitialized && !req.path.includes('/health')) {
+        return res.status(503).json({ error: 'Database initializing, please wait...' });
+    }
+    next();
+});
+
 app.get('/api/institutions', async (req, res) => {
     try {
         const { type, stream, location, search } = req.query;
