@@ -30,6 +30,10 @@ initDb().then(database => {
     });
 });
 
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', version: '1.0.1', timestamp: new Date().toISOString() });
+});
+
 // Helper: Log admin action
 async function logAudit(username, action, details) {
     try {
