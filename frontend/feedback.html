@@ -10,155 +10,297 @@
     <link rel="manifest" href="manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --text: #0f172a;
+            --secondary: #64748b;
+        }
+
+        [data-theme="dark"] :root {
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text: #f8fafc;
+            --secondary: #94a3b8;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            margin: 0;
+        }
+
+        [data-theme="dark"] body {
+            background-color: #0f172a;
+        }
+
         .page-hero {
-            background: linear-gradient(135deg, #0369a1, #0ea5e9);
+            background: var(--primary-gradient);
+            background-size: 200% 200%;
+            animation: gradientBG 15s ease infinite;
             color: white;
-            padding: 4rem 2rem;
+            padding: 9rem 2rem 11rem;
             text-align: center;
+            position: relative;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         .page-hero h1 {
-            font-size: 2.5rem;
+            font-size: clamp(2.2rem, 6vw, 3.8rem);
             font-weight: 800;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1.2rem;
+            letter-spacing: -1.5px;
+            animation: fadeInDown 0.8s ease;
         }
 
         .page-hero p {
-            font-size: 1.1rem;
-            opacity: 0.85;
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 650px;
+            margin: 0 auto;
+            animation: fadeInUp 0.8s ease 0.2s both;
         }
 
         .page-content {
-            max-width: 700px;
-            margin: 3rem auto;
-            padding: 0 2rem;
+            max-width: 900px;
+            margin: -6rem auto 6rem;
+            padding: 0 1.5rem;
+            position: relative;
+            z-index: 10;
         }
 
-        .feedback-form {
-            background: white;
-            border-radius: 20px;
-            padding: 2.5rem;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e2e8f0;
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
         }
 
-        .form-row {
-            margin-bottom: 1.5rem;
+        .info-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 24px;
+            padding: 1.75rem;
+            border: 1px solid var(--glass-border);
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .info-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] .info-card:hover {
+            background: rgba(30, 41, 59, 0.85);
+        }
+
+        .info-card .icon {
+            font-size: 2.8rem;
+            margin-bottom: 1.2rem;
+            display: block;
+        }
+
+        .info-card h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.6rem;
+        }
+
+        .info-card p {
+            font-size: 0.9rem;
+            color: var(--secondary);
+            line-height: 1.5;
+        }
+
+        .feedback-form-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border-radius: 36px;
+            padding: 4rem;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.25);
+            animation: scaleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
+        }
+
+        .form-header {
+            margin-bottom: 3.5rem;
+            text-align: center;
+        }
+
+        .form-header h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 0.8rem;
+        }
+
+        .form-header p {
+            color: var(--secondary);
+            font-size: 1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .form-row.full {
+            grid-column: span 2;
         }
 
         .form-row label {
             display: block;
-            font-weight: 600;
-            color: #0f172a;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+            opacity: 0.9;
         }
 
         .form-row input,
         .form-row select,
         .form-row textarea {
             width: 100%;
-            padding: 0.85rem 1rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 1rem;
+            padding: 1.1rem 1.4rem;
+            background: rgba(255, 255, 255, 0.4);
+            border: 1.5px solid rgba(0, 0, 0, 0.06);
+            border-radius: 18px;
+            font-size: 1.1rem;
+            color: var(--text);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: inherit;
-            outline: none;
-            transition: border-color 0.2s;
-            background: #f8fafc;
+        }
+
+        [data-theme="dark"] .form-row input,
+        [data-theme="dark"] .form-row select,
+        [data-theme="dark"] .form-row textarea {
+            background: rgba(15, 23, 42, 0.4);
+            border-color: rgba(255, 255, 255, 0.08);
         }
 
         .form-row input:focus,
         .form-row select:focus,
         .form-row textarea:focus {
-            border-color: #0ea5e9;
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 5px rgba(99, 102, 241, 0.2);
             background: white;
+            transform: translateY(-2px);
+        }
+
+        [data-theme="dark"] .form-row input:focus,
+        [data-theme="dark"] .form-row select:focus,
+        [data-theme="dark"] .form-row textarea:focus {
+            background: #1e293b;
         }
 
         .form-row textarea {
-            min-height: 150px;
+            min-height: 180px;
             resize: vertical;
         }
 
         .submit-btn {
             width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, #0369a1, #0ea5e9);
+            padding: 1.25rem;
+            background: var(--primary-gradient);
+            background-size: 200% auto;
             color: white;
             border: none;
-            border-radius: 12px;
-            font-size: 1.05rem;
-            font-weight: 700;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            font-weight: 800;
             cursor: pointer;
-            transition: all 0.3s;
-            font-family: inherit;
+            transition: 0.5s cubic-bezier(0.2, 0, 0.2, 1);
+            box-shadow: 0 15px 35px -10px rgba(99, 102, 241, 0.5);
+            margin-top: 1rem;
         }
 
         .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
+            background-position: right center;
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 20px 45px -10px rgba(99, 102, 241, 0.6);
         }
 
-        .submit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
+        .submit-btn:active {
+            transform: translateY(0);
         }
 
-        .success-msg {
-            display: none;
-            background: #dcfce7;
-            color: #166534;
-            border: 1px solid #bbf7d0;
-            border-radius: 12px;
-            padding: 1.25rem;
-            text-align: center;
-            font-weight: 600;
-            margin-top: 1.5rem;
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .error-msg {
-            display: none;
-            background: #fef2f2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
-            border-radius: 12px;
-            padding: 1.25rem;
-            text-align: center;
-            font-weight: 600;
-            margin-top: 1.5rem;
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .info-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
-        .info-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.25rem;
-            border: 1px solid #e2e8f0;
-            text-align: center;
-        }
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
 
-        .info-card .icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
+            .form-row.full {
+                grid-column: span 1;
+            }
 
-        .info-card h4 {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: #0f172a;
-        }
+            .feedback-form-container {
+                padding: 2.5rem 1.5rem;
+            }
 
-        .info-card p {
-            font-size: 0.8rem;
-            color: #64748b;
-            margin-top: 0.25rem;
+            .page-hero {
+                padding: 8rem 1.5rem 8rem;
+            }
         }
     </style>
 </head>
@@ -176,12 +318,10 @@
             <nav class="main-nav">
                 <ul class="nav-links">
                     <li><a href="index.html">🏠 Home</a></li>
-                    <li><a href="scholarship.html">🎓 Scholarships</a></li>
-                    <li><a href="notices.html">📢 Notices</a></li>
-                    <li><a href="teachers.html">👨‍🏫 Teachers</a></li>
-                    <li><a href="gallery.html">🖼️ Gallery</a></li>
+                    <li><a href="scholarship.html" data-i18n="nav_ads">🎓 Scholarships</a></li>
+                    <li><a href="notices.html" data-i18n="nav_updates">📢 Notices</a></li>
                     <li><a href="map.html">🗺️ Map</a></li>
-                    <li><a href="feedback.html" style="color:#0369a1">📝 Feedback</a></li>
+                    <li><a href="feedback.html" style="color:#6366f1; font-weight: 700;">📝 Feedback</a></li>
                 </ul>
             </nav>
             <div class="header-actions">
@@ -193,74 +333,87 @@
 
     <div class="page-hero">
         <h1>📝 Feedback & Complaints</h1>
-        <p>अपनी बात हम तक पहुंचाएं — हम सुनते हैं</p>
+        <p>अपनी बात हम तक पहुंचाएं — हम हर राय को गंभीरता से लेते हैं।</p>
     </div>
 
     <div class="page-content">
-        <div class="info-cards">
+        <div class="info-grid">
             <div class="info-card">
-                <div class="icon">💬</div>
+                <span class="icon">💬</span>
                 <h4>General Feedback</h4>
-                <p>Share your thoughts and suggestions</p>
+                <p>Share your valuable thoughts and suggestions for improvement.</p>
             </div>
             <div class="info-card">
-                <div class="icon">⚠️</div>
+                <span class="icon">⚠️</span>
                 <h4>Complaints</h4>
-                <p>Report issues or grievances</p>
+                <p>Report issues or grievances regarding any institution or service.</p>
             </div>
             <div class="info-card">
-                <div class="icon">💡</div>
-                <h4>Suggestions</h4>
-                <p>Ideas to improve the portal</p>
+                <span class="icon">🌟</span>
+                <h4>Appreciation</h4>
+                <p>Share positive stories and appreciate good work in education.</p>
             </div>
         </div>
 
-        <div class="feedback-form">
-            <h2
-                style="font-size:1.4rem; font-weight:800; color:#0f172a; margin-bottom:1.75rem; border-bottom:2px solid #e2e8f0; padding-bottom:1rem;">
-                Submit Your Feedback</h2>
-
-            <div class="form-row">
-                <label for="fb-name">Your Name *</label>
-                <input type="text" id="fb-name" placeholder="आपका नाम / Your name" required>
-            </div>
-            <div class="form-row">
-                <label for="fb-contact">Phone / Email (optional)</label>
-                <input type="text" id="fb-contact" placeholder="Contact details for follow-up">
-            </div>
-            <div class="form-row">
-                <label for="fb-type">Feedback Type *</label>
-                <select id="fb-type">
-                    <option value="feedback">💬 General Feedback</option>
-                    <option value="complaint">⚠️ Complaint / शिकायत</option>
-                    <option value="suggestion">💡 Suggestion / सुझाव</option>
-                    <option value="appreciation">🌟 Appreciation</option>
-                </select>
-            </div>
-            <div class="form-row">
-                <label for="fb-inst">School/College Name (if applicable)</label>
-                <input type="text" id="fb-inst" placeholder="Institution name">
-            </div>
-            <div class="form-row">
-                <label for="fb-message">Your Message *</label>
-                <textarea id="fb-message" placeholder="Please share your feedback in detail...  
-अपनी बात विस्तार से लिखें..."></textarea>
+        <div class="feedback-form-container">
+            <div class="form-header">
+                <h2>Submit Your Feedback</h2>
+                <p>Please fill in the details below. Required fields are marked with *</p>
             </div>
 
-            <button class="submit-btn" id="submit-btn" onclick="submitFeedback()">Send Feedback ✉️</button>
-            <div class="success-msg" id="success-msg">✅ Thank you! Your feedback has been submitted successfully. We
-                will review it soon.</div>
-            <div class="error-msg" id="error-msg">❌ Something went wrong. Please try again later.</div>
+            <div class="form-grid">
+                <div class="form-row">
+                    <label for="fb-name">Full Name *</label>
+                    <input type="text" id="fb-name" placeholder="आपका नाम / Your full name" required>
+                </div>
+                <div class="form-row">
+                    <label for="fb-contact">Phone / Email</label>
+                    <input type="text" id="fb-contact" placeholder="Contact for follow-up">
+                </div>
+                <div class="form-row">
+                    <label for="fb-type">Feedback Type *</label>
+                    <select id="fb-type">
+                        <option value="feedback">💬 General Feedback</option>
+                        <option value="complaint">⚠️ Complaint / शिकायत</option>
+                        <option value="suggestion">💡 Suggestion / सुझाव</option>
+                        <option value="appreciation">🌟 Appreciation / सराहना</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="fb-inst">School/College Name</label>
+                    <input type="text" id="fb-inst" placeholder="Institution name (if any)">
+                </div>
+                <div class="form-row full">
+                    <label for="fb-message">Your Message *</label>
+                    <textarea id="fb-message"
+                        placeholder="Please share your feedback in detail... अपनी बात विस्तार से लिखें..."></textarea>
+                </div>
+            </div>
+
+            <button class="submit-btn" id="submit-btn" onclick="submitFeedback()">Send Feedback ⚡</button>
+
+            <div class="success-msg" id="success-msg">
+                ✨ **Thank you!** Your feedback has been submitted successfully. We will review it shortly.
+            </div>
+            <div class="error-msg" id="error-msg">
+                ❌ **Oops!** Something went wrong. Please check your connection and try again.
+            </div>
         </div>
     </div>
 
-    <footer style="background:#1e293b; color:white; text-align:center; padding:2rem; margin-top:4rem; opacity:0.9;">
-        <p>© 2026 Dantewada Education Portal | <a href="index.html" style="color:#93c5fd;">Back to Home</a></p>
+    <footer style="background:#0f172a; color:white; text-align:center; padding:4rem 2rem; opacity:0.95;">
+        <p style="opacity: 0.6; font-size: 0.9rem;">© 2026 Dantewada Education Portal | <a href="index.html"
+                style="color:#6366f1; text-decoration:none;">Back to Home</a></p>
     </footer>
 
     <script>
         const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'
             ? 'http://localhost:5000/api' : 'https://mydistrictproject-5.onrender.com/api';
+
+        // Check for theme
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
 
         async function submitFeedback() {
             const name = document.getElementById('fb-name').value.trim();
@@ -273,7 +426,7 @@
 
             const btn = document.getElementById('submit-btn');
             btn.disabled = true;
-            btn.textContent = 'Sending...';
+            btn.innerHTML = 'Sending... ⏳';
 
             try {
                 const res = await fetch(`${API_URL}/feedback`, {
@@ -289,6 +442,9 @@
                     document.getElementById('fb-contact').value = '';
                     document.getElementById('fb-inst').value = '';
                     document.getElementById('fb-message').value = '';
+
+                    // Scroll to message
+                    document.getElementById('success-msg').scrollIntoView({ behavior: 'smooth' });
                 } else {
                     throw new Error(data.error);
                 }
@@ -298,7 +454,7 @@
             }
 
             btn.disabled = false;
-            btn.textContent = 'Send Feedback ✉️';
+            btn.innerHTML = 'Send Feedback ⚡';
         }
 
         const toggle = document.querySelector('.mobile-toggle');
