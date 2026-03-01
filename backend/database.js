@@ -207,6 +207,9 @@ async function initDb() {
     try {
         await db.exec(`ALTER TABLE institutions ADD COLUMN longitude REAL`);
     } catch (e) { /* column already exists */ }
+    try {
+        await db.exec(`ALTER TABLE exam_alerts ADD COLUMN status TEXT DEFAULT 'upcoming'`);
+    } catch (e) { /* column already exists */ }
 
     const fs = require('fs');
     // Seed data if empty
@@ -332,7 +335,7 @@ async function initDb() {
             ('वार्षिक खेल दिवस 2025', 'Annual Sports Day 2025', 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800', 'जवाहर नवोदय विद्यालय', '2025-12-15'),
             ('विज्ञान प्रदर्शनी 2025', 'Science Exhibition 2025', 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=800', 'केंद्रीय विद्यालय', '2025-11-20'),
             ('सांस्कृतिक कार्यक्रम', 'Cultural Event', 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800', 'शासकीय महाविद्यालय', '2025-10-02'),
-            ('पुस्तक मेला 2025', 'Book Fair 2025', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800', 'जिला शिक्षा केंद्र', '2025-09-14'),
+            ('पुस्तक मेला 2025', 'Book Fair 2025', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400', 'जिला शिक्षा केंद्र', '2025-09-14'),
             ('पर्यावरण दिवस', 'Environment Day', 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=800', 'विभिन्न स्कूल', '2025-06-05'),
             ('स्नातक समारोह 2025', 'Graduation Ceremony 2025', 'https://images.unsplash.com/photo-1562774053-701939374585?w=800', 'दंतेश्वरी महाविद्यालय', '2025-05-30')
         `);

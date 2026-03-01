@@ -25,9 +25,12 @@ let db;
 // Initialize Database
 initDb().then(database => {
     db = database;
-    app.listen(PORT, () => {
-        console.log(`Server running on http://localhost:${PORT}`);
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`Server running on port ${PORT}`);
     });
+}).catch(err => {
+    console.error('CRITICAL: Failed to initialize database and start server:', err);
+    process.exit(1);
 });
 
 app.get('/api/health', (req, res) => {
@@ -863,15 +866,22 @@ app.get('/api/toppers', async (req, res) => {
         const { category, year } = req.query;
         let query = 'SELECT * FROM toppers';
         const params = [];
+        const filters = [];
+
         if (category && category !== 'All') {
-            query += ' WHERE category = ?';
+            filters.push('category = ?');
             params.push(category);
         }
         if (year) {
-            query += (params.length > 0 ? ' AND' : ' WHERE') + ' year = ?';
+            filters.push('year = ?');
             params.push(year);
         }
-        query += ' ORDER BY year DESC, rank ASC';
+
+        if (filters.length > 0) {
+            query += ' WHERE ' + filters.join(' AND ');
+        }
+
+        query += ' ORDER BY year DESC, CAST(rank AS INTEGER) ASC';
         const toppers = await db.all(query, params);
         res.json(toppers);
     } catch (err) {
@@ -881,12 +891,12 @@ app.get('/api/toppers', async (req, res) => {
 
 app.post('/api/admin/toppers', async (req, res) => {
     try {
-        const { name, name_hi, photo_url, rank, year, school_name, school_name_hi, percentage, category, details, details_hi, admin_user } = req.body;
+        const { name, name_en, photo_url, rank, year, school_name, school_name_en, percentage, category, details, details_en, admin_user } = req.body;
         await db.run(`
-            INSERT INTO toppers (name, name_hi, photo_url, rank, year, school_name, school_name_hi, percentage, category, details, details_hi)
+            INSERT INTO toppers (name, name_en, photo_url, rank, year, school_name, school_name_en, percentage, category, details, details_en)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, [name, name_hi, photo_url, rank, year, school_name, school_name_hi, percentage, category, details, details_hi]);
-        await logAudit(admin_user || 'admin', 'ADD_TOPPER', `Added topper: ${name}`);
+        `, [name, name_en, photo_url, rank, year, school_name, school_name_en, percentage, category, details, details_en]);
+        await logAudit(admin_user || 'admin', 'ADD_TOPPER', `Added topper: ${name_en}`);
         res.status(201).json({ message: 'Topper added successfully' });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -902,7 +912,7 @@ app.get('/api/resources', async (req, res) => {
         const filters = [];
         if (cls) { filters.push('class = ?'); params.push(cls); }
         if (type) { filters.push('type = ?'); params.push(type); }
-        if (subject) { filters.push('(subject LIKE ? OR subject_hi LIKE ?)'); params.push(`%${subject}%`, `%${subject}%`); }
+        if (subject) { filters.push('(subject LIKE ? OR subject_en LIKE ?)'); params.push(`%${subject}%`, `%${subject}%`); }
 
         if (filters.length > 0) {
             query += ' WHERE ' + filters.join(' AND ');
@@ -917,12 +927,12 @@ app.get('/api/resources', async (req, res) => {
 
 app.post('/api/admin/resources', async (req, res) => {
     try {
-        const { title, title_hi, class: cls, subject, subject_hi, type, board, download_url, year, admin_user } = req.body;
+        const { title, title_en, class: cls, subject, subject_en, type, board, download_url, year, admin_user } = req.body;
         await db.run(`
-            INSERT INTO resources (title, title_hi, class, subject, subject_hi, type, board, download_url, year)
+            INSERT INTO resources (title, title_en, class, subject, subject_en, type, board, download_url, year)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, [title, title_hi, cls, subject, subject_hi, type, board, download_url, year]);
-        await logAudit(admin_user || 'admin', 'ADD_RESOURCE', `Added resource: ${title}`);
+        `, [title, title_en, cls, subject, subject_en, type, board, download_url, year]);
+        await logAudit(admin_user || 'admin', 'ADD_RESOURCE', `Added resource: ${title_en}`);
         res.status(201).json({ message: 'Resource added successfully' });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -941,12 +951,12 @@ app.get('/api/exam-alerts', async (req, res) => {
 
 app.post('/api/admin/exam-alerts', async (req, res) => {
     try {
-        const { exam_name, exam_name_hi, exam_date, description, description_hi, link, admin_user } = req.body;
+        const { exam_name, exam_name_en, exam_date, description, description_en, link, admin_user } = req.body;
         await db.run(`
-            INSERT INTO exam_alerts (exam_name, exam_name_hi, exam_date, description, description_hi, link)
+            INSERT INTO exam_alerts (exam_name, exam_name_en, exam_date, description, description_en, link)
             VALUES (?, ?, ?, ?, ?, ?)
-        `, [exam_name, exam_name_hi, exam_date, description, description_hi, link]);
-        await logAudit(admin_user || 'admin', 'ADD_EXAM_ALERT', `Added exam alert: ${exam_name}`);
+        `, [exam_name, exam_name_en, exam_date, description, description_en, link]);
+        await logAudit(admin_user || 'admin', 'ADD_EXAM_ALERT', `Added exam alert: ${exam_name_en}`);
         res.status(201).json({ message: 'Exam alert created successfully' });
     } catch (err) {
         res.status(500).json({ error: err.message });
