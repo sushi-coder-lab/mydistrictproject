@@ -614,7 +614,7 @@ body {
 
 .hero-search-top {
     position: absolute;
-    top: 2rem;
+    top: 0.5rem;
     left: 0;
     right: 0;
     z-index: 5;
