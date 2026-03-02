@@ -613,22 +613,20 @@ body {
 }
 
 .hero-search-top {
-    position: absolute;
-    top: 16px;
-    left: 0;
-    right: 0;
+    position: relative;
     z-index: 5;
+    width: 100%;
     padding: 0 2rem;
+    margin-bottom: 2.5rem;
     animation: searchFloat 4s ease-in-out infinite;
 }
 
-/* Gradient border wrapper */
 .hero-search-top .search-container {
-    max-width: 840px;
+    max-width: 860px;
+    width: 100%;
     margin: 0 auto;
     position: relative;
     padding: 3px;
-    /* border thickness */
     border-radius: 60px;
     background: linear-gradient(135deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe, #00f2fe);
     background-size: 300% 300%;
@@ -700,8 +698,9 @@ body {
     transform: scale(1.1);
 }
 
-/* Find button — animated shimmer */
-.hero-search-top .search-container button#search-btn {
+/* Find Institutions button */
+.hero-search-top .search-inner #find-btn,
+.hero-search-top .search-container #find-btn {
     background: linear-gradient(90deg,
             #2563eb 0%,
             #7c3aed 25%,
@@ -726,13 +725,15 @@ body {
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-.hero-search-top .search-container button#search-btn:hover {
+.hero-search-top .search-inner #find-btn:hover,
+.hero-search-top .search-container #find-btn:hover {
     transform: scale(1.05) translateY(-1px);
     box-shadow: 0 8px 30px rgba(99, 102, 241, 0.75);
     filter: brightness(1.1);
 }
 
-.hero-search-top .search-container button#search-btn:active {
+.hero-search-top .search-inner #find-btn:active,
+.hero-search-top .search-container #find-btn:active {
     transform: scale(0.98);
 }
 
