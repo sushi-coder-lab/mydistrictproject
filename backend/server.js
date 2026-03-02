@@ -23,6 +23,18 @@ app.use(express.json());
 let db;
 let dbInitialized = false;
 
+// Root route
+app.get('/', (req, res) => {
+    res.json({
+        name: 'Dantewada Education Portal API',
+        status: 'running',
+        db: dbInitialized ? 'ready' : 'initializing',
+        version: '1.0.2',
+        frontend: 'https://sushi-coder-lab.github.io/mydistrictproject/',
+        docs: 'Use /api/institutions, /api/updates, /api/stats etc.'
+    });
+});
+
 // Health check (before DB init)
 app.get('/api/health', (req, res) => {
     res.json({
