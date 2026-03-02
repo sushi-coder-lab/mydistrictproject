@@ -698,7 +698,9 @@
     </div>
 
     <script>
-        const API_URL = 'https://mydistrictproject-5.onrender.com/api';
+        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'
+            ? 'http://localhost:5000/api'
+            : 'https://mydistrictproject-5.onrender.com/api';
 
         // Show/Hide Password
         const togglePwd = document.getElementById('toggle-pwd');
